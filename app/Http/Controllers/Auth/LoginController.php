@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Usuarios; // Importa el modelo correcto
+use App\Models\Usuario; // Importa el modelo correcto
 
 class LoginController extends Controller
 {
