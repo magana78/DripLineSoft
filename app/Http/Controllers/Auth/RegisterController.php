@@ -39,10 +39,8 @@ class RegisterController extends Controller
             'telefono' => ['required', 'string', 'max:15'],
             'email_contacto' => ['required', 'string', 'email'],
             'plan_suscripcion' => ['required', 'string'],
-            'monto_suscripcion' => ['required', 'numeric'],
             'fecha_registro' => ['required', 'date'],
             'fecha_fin_suscripcion' => ['required', 'date'],
-            'estado_suscripcion' => ['required', 'string'],
             'sector' => ['required', 'string', 'max:255'],
         ]);
     }
@@ -69,10 +67,8 @@ class RegisterController extends Controller
             'telefono' => $data['telefono'],
             'email_contacto' => $data['email_contacto'],
             'plan_suscripcion' => $data['plan_suscripcion'],
-            'monto_suscripcion' => $data['monto_suscripcion'],
             'fecha_registro' => $data['fecha_registro'],
             'fecha_fin_suscripcion' => $data['fecha_fin_suscripcion'],
-            'estado_suscripcion' => $data['estado_suscripcion'],
             'sector' => $data['sector'],
         ]);
 
