@@ -42,10 +42,14 @@ class Sucursale extends Model
 		'id_cliente',
 		'nombre_sucursal',
 		'direccion',
+		'latitud',  
+		'longitud', 
 		'telefono',
 		'horario_atencion',
-		'tiempo_entrega_estandar'
+		'tiempo_entrega_estandar',
+		'activa', 
 	];
+	
 
 	public function cliente()
 	{
