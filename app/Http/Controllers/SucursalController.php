@@ -12,19 +12,21 @@ use App\Models\Sucursale; // Importa el modelo correcto
 
 class SucursalController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
-{
-    $sucursales = Sucursale::all(); // Obtener todas las sucursales
-    return view('sucursales.index', compact('sucursales'));
-}
+    {
+        $sucursales = Sucursale::where('activa', true)->get(); // Filtrar solo las sucursales activas
+        return view('sucursales.index', compact('sucursales'));
+    }
 
+    
+    public function inactivas()
+    {
+        $sucursales = Sucursale::where('activa', false)->get();
+        return view('sucursales.inactivas', compact('sucursales'));
+    }
+    
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('sucursales.create'); // No necesitas pasar clientes manualmente
@@ -82,6 +84,8 @@ class SucursalController extends Controller
         
         return redirect()->route('sucursales.index')->with('success', 'Sucursal registrada exitosamente.');
     }
+
+
     public function toggleEstado($id)
     {
         $sucursal = Sucursale::findOrFail($id);

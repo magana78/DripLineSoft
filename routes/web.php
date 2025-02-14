@@ -3,8 +3,6 @@
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\SucursalController;
 use App\Http\Controllers\PaymentController;
-
-
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -17,8 +15,16 @@ Route::post('/registro', [RegisterController::class, 'register']);
 
 // Grupo de rutas protegidas con autenticación
 Route::middleware(['auth'])->group(function () {
-    Route::resource('sucursales', SucursalController::class);
+    
+    // Rutas personales antes del resource
+    Route::get('/sucursales/inactivas', [SucursalController::class, 'inactivas'])
+        ->name('sucursales.inactivas');
+
     Route::post('/sucursales/{id}/toggle', [SucursalController::class, 'toggleEstado'])->name('sucursales.toggle');
+
+    // Rutas resource index, create, store, show, edit, update, destroy
+    Route::resource('sucursales', SucursalController::class);
+
 
     Route::get('/dashboard', function () {
         return view('dashboard.index');
@@ -26,13 +32,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::post('/payments/store', [PaymentController::class, 'store'])->name('payments.store');
-
-    // Agregar las rutas de que requierdan de autenticacion aqui
-
-
 });
-
-
-
 
 Auth::routes();

@@ -317,18 +317,33 @@ return [
             'type' => 'sidebar-menu-search',
             'text' => 'search',
         ],
-        [
-            'text' => 'blog',
-            'url' => 'admin/blog',
-            'can' => 'manage-blog',
-        ],
-        [
-            'text' => 'pages',
-            'url' => 'admin/pages',
-            'icon' => 'far fa-fw fa-file',
-            'label' => 4,
-            'label_color' => 'success',
-        ],
+
+          // Sección de Sucursales con submenús
+            [
+                'text' => 'Sucursales',
+                'icon' => 'fas fa-store',
+                'submenu' => [
+                    [
+                        'text' => 'Activas',
+                        'icon' => 'fas fa-check-circle',
+                        'url' => '/sucursales', // URL sin route()
+                    ],
+                    [
+                        'text' => 'Inactivas',
+                        'icon' => 'fas fa-ban',
+                        'url' => '/sucursales/inactivas', // URL sin route()
+                    ],
+                ],
+            ],
+
+            // Métodos de Pago
+            [
+                'text' => 'Métodos de Pago',
+                'icon' => 'fas fa-credit-card',
+                'url' => '/payments', // URL sin route()
+            ],
+       
+            
         ['header' => 'account_settings'],
         [
             'text' => 'profile',

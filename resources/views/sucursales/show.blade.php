@@ -23,19 +23,12 @@
                     <div id="map" style="width: 100%; height: 300px; border-radius: 10px;"></div>
 
                     <div class="d-flex justify-content-end mt-3">
-                        <!-- Botón de editar -->
-                        <a href="{{ route('sucursales.edit', $sucursal->id_sucursal) }}" class="btn me-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar">
-                            <i class="fas fa-edit text-yellow"></i>
-                        </a>
+                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#editSucursalModal">
+                        <i class="fas fa-edit text-warning"></i> 
+                    </button>
 
-                        <!-- Botón de eliminar 
-                        <form action="{{ route('sucursales.destroy', $sucursal->id_sucursal) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta sucursal?');">
-                            @csrf
-                            <button type="submit" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar">
-                                <i class="fas fa-trash text-danger"></i>
-                            </button>
-                        </form>-->
 
+                        
                         <form action="{{ route('sucursales.toggle', $sucursal->id_sucursal) }}" method="POST">
                             @csrf
                             <button type="submit" class="btn border-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Desabilitar">
@@ -51,6 +44,63 @@
         </div>
     </div>
 </div>
+
+
+<!-- Modal de edición -->
+<div class="modal fade" id="editSucursalModal" tabindex="-1" aria-labelledby="editSucursalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="editSucursalModalLabel">Editar Sucursal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('sucursales.update', $sucursal->id_sucursal) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+
+                    <!-- Nombre de la sucursal -->
+                    <div class="mb-3">
+                        <label for="nombre_sucursal" class="form-label">Nombre de la Sucursal</label>
+                        <input type="text" class="form-control" id="nombre_sucursal" name="nombre_sucursal" value="{{ $sucursal->nombre_sucursal }}" required>
+                    </div>
+
+                    <!-- Dirección -->
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="direccion" name="direccion" value="{{ $sucursal->direccion }}" required>
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div class="mb-3">
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" id="telefono" name="telefono" value="{{ $sucursal->telefono }}" required>
+                    </div>
+
+                    <!-- Horario -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="hora_inicio" class="form-label">Hora de Inicio</label>
+                            <input type="time" class="form-control" id="hora_inicio" name="hora_inicio" value="{{ old('hora_inicio', explode(' - ', $sucursal->horario_atencion)[0] ?? '') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="hora_fin" class="form-label">Hora de Fin</label>
+                            <input type="time" class="form-control" id="hora_fin" name="hora_fin" value="{{ old('hora_fin', explode(' - ', $sucursal->horario_atencion)[1] ?? '') }}" required>
+                        </div>
+                    </div>
+
+                    <!-- Botón de Guardar -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <style>
     .transition-icon {
         transition: color 0.3s ease-in-out;
@@ -83,6 +133,22 @@
             new bootstrap.Tooltip(tooltipTriggerEl);
         });
     });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    var modalElement = document.getElementById("editSucursalModal");
+    if (modalElement) { // Asegurarse de que el modal existe en el DOM antes de usarlo
+        var editModal = new bootstrap.Modal(modalElement);
+
+        var editButton = document.querySelector("[data-bs-target='#editSucursalModal']");
+        if (editButton) {
+            editButton.addEventListener("click", function () {
+                console.log("Clic en Editar");
+                editModal.show();
+            });
+        }
+    }
+});
+
 </script>
 
 @endsection
