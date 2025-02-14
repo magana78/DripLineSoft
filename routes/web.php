@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\SucursalController;
+use App\Http\Controllers\PaymentController;
+
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +25,12 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('sucursales', SucursalController::class);
     Route::post('/sucursales/{id}/toggle', [SucursalController::class, 'toggleEstado'])->name('sucursales.toggle');
 
+});
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::post('/payments/store', [PaymentController::class, 'store'])->name('payments.store');
 });
 
 Auth::routes();

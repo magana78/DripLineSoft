@@ -68,17 +68,15 @@
                             </div>
                         </div>
 
-                        <!-- Días de la semana -->
+                       <!-- Días de la semana -->
                         <div class="mt-3">
-                            <label class="form-label">Días de la semana</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="lunes" name="dias[]" value="Lunes">
-                                <label class="form-check-label" for="lunes">Lunes</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="martes" name="dias[]" value="Martes">
-                                <label class="form-check-label" for="martes">Martes</label>
-                            </div>
+                            <label class="form-label">Días de la semana</label><br>
+                            @foreach(['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'] as $dia)
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="{{ strtolower($dia) }}" name="dias[]" value="{{ $dia }}">
+                                    <label class="form-check-label" for="{{ strtolower($dia) }}">{{ $dia }}</label>
+                                </div>
+                            @endforeach
                         </div>
 
                         <!-- Botón de Envío -->

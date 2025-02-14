@@ -13,13 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Verificar si el usuario ya existe antes de crearlo
-        if (!\App\Models\User::where('email', 'test@example.com')->exists()) {
-            \App\Models\User::factory()->create([
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-            ]);
-        }
+        
         $this->call(MetodosPagoSeeder::class);
 
     }
