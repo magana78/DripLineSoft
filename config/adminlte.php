@@ -318,36 +318,40 @@ return [
             'text' => 'search',
         ],
 
-          // Sección de Sucursales con submenús
-            [
-                'text' => 'Sucursales',
-                'icon' => 'fas fa-store',
-                'submenu' => [
-                    [
-                        'text' => 'Agregar',
-                        'icon' => 'fas fa-plus',
-                        'url' => '/sucursales/create', 
-                    ],
-                    [
-                        'text' => 'Activas',
-                        'icon' => 'fas fa-check-circle',
-                        'url' => '/sucursales', // URL sin route()
-                    ],
-                    [
-                        'text' => 'Inactivas',
-                        'icon' => 'fas fa-ban',
-                        'url' => '/sucursales/inactivas', // URL sin route()
-                    ],
+        // Sección de Sucursales con submenús
+        [
+            'text' => 'Sucursales',
+            'icon' => 'fas fa-store',
+            'can' => 'manage-sucursales', // 🔹 Solo los admin_cliente pueden ver esto
+            'submenu' => [
+                [
+                    'text' => 'Agregar',
+                    'icon' => 'fas fa-plus',
+                    'url' => '/sucursales/create',
+                    'can' => 'manage-sucursales',
+                ],
+                [
+                    'text' => 'Activas',
+                    'icon' => 'fas fa-check-circle',
+                    'url' => '/sucursales',
+                    'can' => 'manage-sucursales',
+                ],
+                [
+                    'text' => 'Inactivas',
+                    'icon' => 'fas fa-ban',
+                    'url' => '/sucursales/inactivas',
+                    'can' => 'manage-sucursales',
                 ],
             ],
+        ],
 
-            // Métodos de Pago
-            [
-                'text' => 'Métodos de Pago',
-                'icon' => 'fas fa-credit-card',
-                'url' => '/payments', // URL sin route()
-            ],
-       
+        // Métodos de Pago
+        [
+            'text' => 'Métodos de Pago',
+            'icon' => 'fas fa-credit-card',
+            'url' => '/payments',
+            'can' => 'view-payments', // 🔹 Solo los admin_cliente pueden ver esto
+        ],
             
         ['header' => 'account_settings'],
         [

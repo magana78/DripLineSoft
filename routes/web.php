@@ -33,11 +33,15 @@ Route::post('/paypal/capture-order', [PayPalController::class, 'captureOrder']);
 
 Route::get('/dashboard/historial-pagos', [PagoController::class, 'mostrarHistorial'])->name('historial.pagos');
 
-Route::middleware(['auth'])->group(function () {
+// ✅ Agrupar todas las rutas del "admin_cliente" con middleware de autenticación y rol
+Route::middleware(['auth', 'role:admin_cliente'])->group(function () {
+    
+    // Rutas de sucursales
     Route::get('/sucursales/inactivas', [SucursalController::class, 'inactivas'])->name('sucursales.inactivas');
     Route::post('/sucursales/{id}/toggle', [SucursalController::class, 'toggleEstado'])->name('sucursales.toggle');
     Route::resource('sucursales', SucursalController::class);
-    
+
+    // Rutas de pagos
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::post('/payments/store', [PaymentController::class, 'store'])->name('payments.store');
 });
