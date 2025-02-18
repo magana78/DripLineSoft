@@ -318,6 +318,14 @@ return [
             'text' => 'search',
         ],
 
+         // 📌 Opción del Dashboard (Visible para todos los usuarios autenticados)
+        [
+            'text' => 'Dashboard',
+            'icon' => 'fas fa-tachometer-alt',
+            'url'  => '/dashboard',
+            'can'  => 'access-dashboard', // Se puede controlar con un Gate si es necesario
+        ],
+
         // Sección de Sucursales con submenús
         [
             'text' => 'Sucursales',
@@ -364,7 +372,7 @@ return [
             'url' => 'admin/settings',
             'icon' => 'fas fa-fw fa-lock',
         ],
-        [
+       /* [
             'text' => 'multilevel',
             'icon' => 'fas fa-fw fa-share',
             'submenu' => [
@@ -401,7 +409,7 @@ return [
                     'url' => '#',
                 ],
             ],
-        ],
+        ],*/
         ['header' => 'labels'],
         [
             'text' => 'important',
