@@ -16,16 +16,23 @@ class UsuariosClientesSeeder extends Seeder
         // Insertar usuarios en la tabla 'usuarios'
         $usuarios = [
             [
+                'nombre' => 'Bryan De La Torre',
+                'email' => 'b@gmail.com',
+                'contraseña' => Hash::make('12345678'), // Hashear la contraseña
+                'rol' => 'admin_cliente', // Valor válido según la migración
+                'fecha_creacion' => now(),
+            ],
+            [
                 'nombre' => 'Juan Pérez',
                 'email' => 'juan.perez@example.com',
-                'contraseña' => Hash::make('password123'), // Hashear la contraseña
+                'contraseña' => Hash::make('12345678'), // Hashear la contraseña
                 'rol' => 'admin_cliente', // Valor válido según la migración
                 'fecha_creacion' => now(),
             ],
             [
                 'nombre' => 'María López',
                 'email' => 'maria.lopez@example.com',
-                'contraseña' => Hash::make('password123'),
+                'contraseña' => Hash::make('12345678'),
                 'rol' => 'cliente_final',
                 'fecha_creacion' => now(),
             ],
@@ -45,7 +52,7 @@ class UsuariosClientesSeeder extends Seeder
                 'monto_suscripcion' => rand(500, 5000),
                 'fecha_registro' => now(),
                 'fecha_fin_suscripcion' => now()->addMonths(rand(1, 12)),
-                'estado_suscripcion' => rand(0, 1),
+                'estado_suscripcion' => 'pendiente',
                 'sector' => ['cafetería', 'restaurante', 'otro'][array_rand(['cafetería', 'restaurante', 'otro'])],
             ]);
         }
