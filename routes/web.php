@@ -1,3 +1,4 @@
+<?php
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\PayPalController;
