@@ -1,8 +1,44 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 .transition-icon {
     transition: color 0.3s ease-in-out;
     font-size: 24px; /* Ajusta el tamaño si lo necesitas */
 }
+
+
+ /* 🔹 Estilos generales para ambos botones */
+ .action-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem; /* Hace que los iconos sean más grandes */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%; /* Hace que los botones sean circulares */
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Efecto flotante */
+}
+
+/* 🎨 Botón de Edición */
+.edit-btn {
+    background-color: #ffc107; /* Amarillo */
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #e0a800; /* Amarillo más oscuro */
+    transform: translateY(-3px); /* Flotación en hover */
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 🎨 Botón de Habilitar/Deshabilitar */
+.toggle-btn {
+    background-color: #343a40; /* Color oscuro */
+    color: white;
+}
+
+.toggle-btn:hover {
+    background-color: #23272b; /* Oscuro más intenso */
+    transform: translateY(-3px); /* Flotación en hover */
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+}
+

@@ -324,6 +324,11 @@ return [
                 'icon' => 'fas fa-store',
                 'submenu' => [
                     [
+                        'text' => 'Agregar',
+                        'icon' => 'fas fa-plus',
+                        'url' => '/sucursales/create', 
+                    ],
+                    [
                         'text' => 'Activas',
                         'icon' => 'fas fa-check-circle',
                         'url' => '/sucursales', // URL sin route()

@@ -45,17 +45,20 @@
                     <div id="map-view" style="width: 100%; height: 300px; border-radius: 10px;"></div>
 
                     <div class="d-flex justify-content-end mt-3">
-                        <button type="button" class="btn btn-warning" id="openEditModal">
-                            <i class="fas fa-edit"></i> Editar
+                        <!-- Botón de Edición (Flotante y Circular) -->
+                        <button type="button" class="btn action-btn edit-btn mr-2" id="openEditModal" data-toggle="tooltip" title="Editar">
+                            <i class="fas fa-edit"></i>
                         </button>
 
+                        <!-- Botón de Habilitar/Deshabilitar (Flotante) -->
                         <form action="{{ route('sucursales.toggle', $sucursal->id_sucursal) }}" method="POST">
                             @csrf
-                            <button type="submit" class="btn border-0" data-bs-toggle="tooltip" title="Deshabilitar">
+                            <button type="submit" class="btn action-btn toggle-btn" data-toggle="tooltip" title="Habilitar/Deshabilitar">
                                 <i class="fas {{ $sucursal->activa ? 'fa-toggle-on text-success' : 'fa-toggle-off text-danger' }}"></i>
                             </button>
                         </form>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -200,34 +203,34 @@
 
     // 🗺️ Inicializa el mapa en el modal
     function initEditMap() {
-        if (!document.getElementById('map-edit')) {
+        let mapContainer = document.getElementById('map-edit');
+
+        if (!mapContainer) {
             console.error("No se encontró el contenedor del mapa.");
             return;
         }
 
         setTimeout(() => {
+            // Eliminar el mapa si ya existe
             if (editMap) {
                 editMap.remove();
             }
 
-            // Cargar datos originales
-            document.getElementById('nombre_sucursal').value = originalData.nombre_sucursal;
-            document.getElementById('direccion').value = originalData.direccion;
-            document.getElementById('lat').value = originalData.lat;
-            document.getElementById('lng').value = originalData.lng;
-            document.getElementById('telefono').value = originalData.telefono;
-            document.getElementById('hora_inicio').value = originalData.hora_inicio;
-            document.getElementById('hora_fin').value = originalData.hora_fin;
+            // Verifica que latitud y longitud sean válidas antes de inicializar el mapa
+            if (!originalData.lat || !originalData.lng) {
+                console.error("Latitud o longitud no definidas.");
+                return;
+            }
 
-            // Crear el mapa dentro del modal con la ubicación original
-            editMap = L.map('map-edit').setView([originalData.lat, originalData.lng], 15);
+            // Inicializar el mapa con la ubicación original
+            editMap = L.map(mapContainer).setView([originalData.lat, originalData.lng], 15);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(editMap);
 
             editMarker = L.marker([originalData.lat, originalData.lng], { draggable: true }).addTo(editMap);
 
-            // 📌 Cuando el usuario mueve el marcador, actualiza la dirección
+            // 📌 Actualizar la dirección cuando el usuario mueva el marcador
             editMarker.on('dragend', function () {
                 let latlng = editMarker.getLatLng();
                 document.getElementById('lat').value = latlng.lat;
@@ -235,14 +238,15 @@
                 obtenerDireccion(latlng.lat, latlng.lng);
             });
 
-            // Redimensiona el mapa después de abrir el modal
+            // Forzar actualización del tamaño del mapa después de abrir el modal
             setTimeout(() => {
                 if (editMap) {
                     editMap.invalidateSize();
                 }
             }, 500);
-        }, 300);
+        }, 500);
     }
+
 
     // 📌 Abre el modal y carga los datos originales
     document.getElementById("openEditModal").addEventListener("click", function () {
@@ -266,7 +270,7 @@
                 document.getElementById('direccion').value = originalData.direccion;
                 document.getElementById('lat').value = originalData.lat;
                 document.getElementById('lng').value = originalData.lng;
-                document.getElementById('telefono').value = originalData.telefono;
+                document.getElementById('telefono_edit').value = originalData.telefono;
                 document.getElementById('hora_inicio').value = originalData.hora_inicio;
                 document.getElementById('hora_fin').value = originalData.hora_fin;
                 document.getElementById('sugerencias').innerHTML = ""; // Limpiar sugerencias
@@ -359,6 +363,7 @@
 
 </script>
 
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Establecer valores en los campos cuando se abre el modal
@@ -370,7 +375,11 @@
     document.getElementById('telefono_edit').addEventListener('input', function (e) {
         this.value = this.value.replace(/\D/g, '').slice(0, 10);
     });
+
+    
 </script>
+
+
 
 <script>
     // Cierra las alertas automáticamente después de 5 segundos
@@ -382,7 +391,6 @@
         });
     }, 5000);
 </script>
-
 
 
 

@@ -82,3 +82,13 @@
     @endif
 </div>
 @endsection
+<script>
+    // Cierra las alertas automáticamente después de 5 segundos
+    setTimeout(() => {
+        let alertas = document.querySelectorAll('.alert');
+        alertas.forEach(alert => {
+            let bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+</script>
