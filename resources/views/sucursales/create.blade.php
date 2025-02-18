@@ -1,7 +1,11 @@
 @extends('layouts.app')
+@section('content_header')
+    <div class="d-flex justify-content-between align-items-center mb-3"></div>
+@endsection
+
 
 @section('content')
-<div class="container mt-5">
+<div class="container mt-1">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-lg rounded">

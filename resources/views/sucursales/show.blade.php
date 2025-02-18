@@ -6,6 +6,26 @@
 
 @section('content')
 <div class="container mt-4">
+     <!-- Contenedor de Mensajes de Éxito y Error -->
+     @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> {{ session('success') }}
+            <button type="button" class="close" data-bs-dismiss="alert" aria-label="Cerrar">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+            <button type="button" class="close" data-bs-dismiss="alert" aria-label="Cerrar">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-lg">
@@ -41,6 +61,14 @@
         </div>
     </div>
 </div>
+
+@php
+    // Extraer código de país y número
+    preg_match('/^\+(\d{1,3})(\d{8,10})$/', $sucursal->telefono, $matches);
+    $regionSeleccionada = isset($matches[1]) ? "+{$matches[1]}" : "+52"; // Default México
+    $numeroSolo = isset($matches[2]) ? $matches[2] : "";
+@endphp
+
 
 <!-- Modal de edición de Sucursal -->
 <div class="modal fade" id="editSucursalModal" tabindex="-1" aria-labelledby="editSucursalModalLabel" aria-hidden="true">
@@ -80,8 +108,19 @@
                     <!-- Teléfono -->
                     <div class="form-group">
                         <label for="telefono"><i class="fas fa-phone"></i> Teléfono</label>
-                        <input type="text" class="form-control" id="telefono" name="telefono" value="{{ $sucursal->telefono }}" required>
+                        <div class="input-group">
+                            <!-- Selector de región -->
+                            <select class="form-select" id="region_edit" name="region" required>
+                                <option value="+52">México (+52)</option>
+                                <option value="+1">EE.UU (+1)</option>
+                                <option value="+34">España (+34)</option>
+                                <option value="+44">Reino Unido (+44)</option>
+                            </select>
+                            <!-- Campo de teléfono -->
+                            <input type="tel" class="form-control" id="telefono_edit" name="telefono" maxlength="10" placeholder="Número de teléfono" pattern="[0-9]{8,10}" required>
+                        </div>
                     </div>
+
 
                     <!-- Horario -->
                     @php
@@ -318,6 +357,30 @@
         }
     });
 
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Establecer valores en los campos cuando se abre el modal
+        document.getElementById('region_edit').value = "{{ $regionSeleccionada }}";
+        document.getElementById('telefono_edit').value = "{{ $numeroSolo }}";
+    });
+
+    // Validar que solo se ingresen números y máximo 10 caracteres en el teléfono
+    document.getElementById('telefono_edit').addEventListener('input', function (e) {
+        this.value = this.value.replace(/\D/g, '').slice(0, 10);
+    });
+</script>
+
+<script>
+    // Cierra las alertas automáticamente después de 5 segundos
+    setTimeout(() => {
+        let alertas = document.querySelectorAll('.alert');
+        alertas.forEach(alert => {
+            let bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
 </script>
 
 
