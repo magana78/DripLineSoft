@@ -5,13 +5,6 @@
 @section('content_header')
     <div class="d-flex justify-content-between align-items-center">
         <h1>Bienvenido al Panel de Administración</h1>
-        <!-- Botón de cerrar sesión -->
-        <form id="logout-form" action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="btn btn-danger">
-                <i class="fas fa-sign-out-alt"></i> Cerrar sesión
-            </button>
-        </form>
     </div>
 @stop
 

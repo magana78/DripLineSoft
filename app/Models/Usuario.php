@@ -64,6 +64,13 @@ class Usuario extends Authenticatable
 		return $this->hasMany(Cliente::class, 'id_usuario');
 	}
 
+	// Para traer un solo id para el metodo de creacion de sucursales
+	public function cliente()
+	{
+		return $this->hasOne(Cliente::class, 'id_usuario', 'id_usuario');
+	}
+	
+
 	public function pedidos()
 	{
 		return $this->hasMany(Pedido::class, 'id_usuario_cliente');

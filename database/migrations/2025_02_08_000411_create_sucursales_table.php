@@ -16,10 +16,15 @@ return new class extends Migration
             $table->integer('id_cliente')->index('id_cliente');
             $table->string('nombre_sucursal');
             $table->text('direccion')->nullable();
+            $table->decimal('latitud', 10, 7)->nullable();  // Nueva columna para latitud
+            $table->decimal('longitud', 10, 7)->nullable(); // Nueva columna para longitud
             $table->string('telefono', 20)->nullable();
             $table->string('horario_atencion')->nullable();
             $table->integer('tiempo_entrega_estandar')->nullable()->default(30)->comment('Tiempo estándar de entrega en minutos');
+            $table->boolean('activa')->default(true); // Nueva columna para la bandera de estado
+
         });
+        
     }
 
     /**
