@@ -25,23 +25,25 @@
                     <div class="d-flex justify-content-end mt-3">
                         <!-- Botón de editar -->
                         <a href="{{ route('sucursales.edit', $sucursal->id_sucursal) }}" class="btn me-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar">
-                            <i class="fas fa-edit"></i>
+                            <i class="fas fa-edit text-yellow"></i>
                         </a>
 
-                        <!-- Botón de eliminar -->
+                        <!-- Botón de eliminar 
                         <form action="{{ route('sucursales.destroy', $sucursal->id_sucursal) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta sucursal?');">
                             @csrf
                             <button type="submit" class="btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar">
                                 <i class="fas fa-trash text-danger"></i>
                             </button>
-                        </form>
+                        </form>-->
 
                         <form action="{{ route('sucursales.toggle', $sucursal->id_sucursal) }}" method="POST">
                             @csrf
-                            <button type="submit" class="btn {{ $sucursal->activa ? 'btn-danger' : 'btn-success' }}">
-                                <i class="fas {{ $sucursal->activa ? 'fa-toggle-on' : 'fa-toggle-off' }}"></i>
+                            <button type="submit" class="btn border-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Desabilitar">
+                                <i class="fas {{ $sucursal->activa ? 'fa-toggle-on text-success' : 'fa-toggle-off text-danger' }} transition-icon"></i>
                             </button>
                         </form>
+
+
 
                     </div>
                 </div>
@@ -49,7 +51,12 @@
         </div>
     </div>
 </div>
-
+<style>
+    .transition-icon {
+        transition: color 0.3s ease-in-out;
+        font-size: 24px; /* Ajusta el tamaño si lo necesitas */
+    }
+</style>
 <!-- Leaflet.js para el mapa -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
