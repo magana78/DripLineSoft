@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('monto_suscripcion', 10);
             $table->dateTime('fecha_registro');
             $table->dateTime('fecha_fin_suscripcion');
-            $table->boolean('estado_suscripcion');
+            $table->enum('estado_suscripcion', ['pendiente', 'activa', 'cancelado'])->default('pendiente');
             $table->enum('sector', ['cafetería', 'restaurante', 'otro'])->nullable()->default('otro');
         });
     }

@@ -1,3 +1,6 @@
+<?php
+
+
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\PayPalController;
@@ -23,7 +26,6 @@ Route::get('/dashboard', function () {
     return view('dashboard.index');
 })->name('dashboard');
 
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/registro', [RegisterController::class, 'register']);
 
 Route::post('/paypal/capture-order', [RegisterController::class, 'activateSubscription'])->name('paypal.capture');
