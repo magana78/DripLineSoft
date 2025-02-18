@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\PagoController;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\RegistroController;
 use Illuminate\Support\Facades\Auth;
@@ -26,11 +27,21 @@ Route::get('/dashboard', function () {
     return view('dashboard.index');
 })->name('dashboard');
 
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/registro', [RegisterController::class, 'register']);
+Route::get('/register', function () {
+    return view('auth.register');
+})->name('register');
 
-Route::post('/paypal/pay', [PayPalController::class, 'createPayment'])->name('paypal.pay');
-Route::post('/paypal/capture', [PayPalController::class, 'capturePayment'])->name('paypal.capture');
+// Ruta para procesar el registro del usuario
+Route::post('/registro', [RegisterController::class, 'register'])->name('registro');
+
+// Ruta para capturar el pago en PayPal y actualizar la base de datos
+Route::post('/paypal/capture-order', [RegisterController::class, 'activateSubscription'])->name('paypal.capture');
+
+
+Route::post('/paypal/create-order', [PayPalController::class, 'createOrder']);
+Route::post('/paypal/capture-order', [PayPalController::class, 'captureOrder']);
+
+Route::get('/dashboard/historial-pagos', [PagoController::class, 'mostrarHistorial'])->name('historial.pagos');
 
 
   

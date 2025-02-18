@@ -3,7 +3,7 @@
 @section('title', 'Registro de Usuario y Negocio')
 
 @section('auth_body')
-    <form action="/registro" method="POST">
+    <form id="registro-form" action="/registro" method="POST">
         @csrf
 
         <!-- Información del Usuario -->
@@ -69,19 +69,6 @@
             </select>
         </div>
 
-  
-
-        <div class="mb-3">
-            <label for="fecha_registro" class="form-label">Fecha de Registro</label>
-            <input type="date" id="fecha_registro" name="fecha_registro" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="fecha_fin_suscripcion" class="form-label">Fecha de Fin de Suscripción</label>
-            <input type="date" id="fecha_fin_suscripcion" name="fecha_fin_suscripcion" class="form-control" required>
-        </div>
-
-       
         <div class="mb-3">
             <label for="sector" class="form-label">Sector</label>
             <select id="sector" name="sector" class="form-control select2" required>
@@ -91,6 +78,10 @@
             </select>
         </div>
 
+        <!-- Campos ocultos para registrar el pago -->
+        <input type="hidden" id="estado_suscripcion" name="estado_suscripcion" value="pendiente">
+        <input type="hidden" id="monto_suscripcion" name="monto_suscripcion" value="0.00">
+
         <!-- Pago con PayPal -->
         <h4 class="text-primary mt-4 mb-3"><i class="fab fa-paypal icon"></i> Pago con PayPal</h4>
 
@@ -98,9 +89,9 @@
 
         <div id="paypal-button-container"></div> <!-- Contenedor del botón oficial -->
 
-        <!-- Botón para registrar -->
+        <!-- Botón para registrar (deshabilitado hasta completar el pago) -->
         <div class="mb-3 text-center mt-4">
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" id="btn-registrar" class="btn btn-primary" >
                 Registrar
             </button>
         </div>
@@ -115,15 +106,60 @@
 
 @section('js')
     <!-- Script oficial de PayPal -->
-    <script src="https://www.paypal.com/sdk/js?client-id=AUbPWY96LNcJW662sREzgkRXE15C_-CynMnQywQyr7qgQzfC6RWzyiyZNyPisBVCAQY85kZyNzx-3euu&currency=MXN"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id={{ config('services.paypal.client_id') }}&currency=MXN"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            console.log("Verificando carga del SDK de PayPal...");
-            setTimeout(function() {
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("✅ Verificando carga del SDK de PayPal...");
+    
+            // 💡 Cuando se envía el formulario de registro
+            document.getElementById("registro-form").addEventListener("submit", function (e) {
+                e.preventDefault(); // 🔹 Evita que recargue la página
+    
+                let formData = new FormData(this);
+    
+                fetch("/registro", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // ✅ Alerta con SweetAlert (Recomendado) 
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Registro Exitoso',
+                            text: 'Tu cuenta ha sido creada. Ahora procede con el pago para activarla.',
+                            confirmButtonText: 'Aceptar'
+                        }).then(() => {
+                            // Guardar email para usarlo en el pago
+                            localStorage.setItem("email_contacto", data.email_contacto);
+    
+                            // Mostrar botón de PayPal
+                            document.getElementById("paypal-button-container").style.display = "block";
+                            document.getElementById("btn-registrar").style.display = "none"; // Ocultar botón de registro
+    
+                            // Renderizar el botón de PayPal
+                            renderPayPalButton();
+                        });
+    
+                    } else {
+                        // ❌ Alerta de error
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error en el registro',
+                            text: data.message
+                        });
+                    }
+                })
+                .catch(error => console.error("❌ Error en la petición:", error));
+            });
+    
+            function renderPayPalButton() {
                 if (typeof paypal !== "undefined") {
-                    console.log("PayPal SDK cargado. Renderizando el botón...");
-
                     paypal.Buttons({
                         style: {
                             layout: 'vertical',
@@ -132,48 +168,77 @@
                             label: 'pay',
                             height: 40
                         },
-                        createOrder: function(data, actions) {
+                        createOrder: function (data, actions) {
                             return actions.order.create({
                                 purchase_units: [{
                                     amount: { value: '300.00' }
                                 }]
                             });
                         },
-                        onApprove: function(data, actions) {
-                            return actions.order.capture().then(function(details) {
-                                console.log("Pago aprobado:", details);
-                                fetch('/paypal/capture', {
+                        onApprove: function (data, actions) {
+                            return actions.order.capture().then(function (details) {
+                                console.log("✅ Pago aprobado:", details);
+    
+                                let emailContacto = localStorage.getItem("email_contacto");
+    
+                                if (!emailContacto) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: 'No se encontró el email de contacto.'
+                                    });
+                                    return;
+                                }
+    
+                                fetch('/paypal/capture-order', {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                                     },
                                     body: JSON.stringify({
                                         orderID: data.orderID,
-                                        payerID: data.payerID,
-                                        paymentID: details.id,
-                                        status: details.status
+                                        email_contacto: emailContacto // 🔹 Enviamos el email almacenado
                                     })
-                                }).then(response => response.json())
-                                  .then(data => {
-                                      if (data.success) {
-                                          alert('Pago completado con éxito');
-                                          window.location.href = "/dashboard";
-                                      } else {
-                                          alert('Error en el pago');
-                                      }
-                                  });
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Pago Completado',
+                                            text: 'Tu suscripción ha sido activada.',
+                                            confirmButtonText: 'Ir al Dashboard'
+                                        }).then(() => {
+                                            window.location.href = "/dashboard";
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error en el pago',
+                                            text: data.error
+                                        });
+                                    }
+                                });
                             });
                         },
                         onError: function (err) {
-                            console.error('Error en el pago:', err);
-                            alert('Ocurrió un error en el proceso de pago.');
+                            console.error('❌ Error en el pago:', err);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Ocurrió un error en el proceso de pago.'
+                            });
                         }
                     }).render('#paypal-button-container');
                 } else {
-                    console.error("Error: PayPal SDK no cargó correctamente.");
+                    console.error("❌ Error: PayPal SDK no cargó correctamente.");
                 }
-            }, 1500);
+            }
         });
     </script>
+    
+    <!-- Agregar SweetAlert (si no lo tienes) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
 @stop

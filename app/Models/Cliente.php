@@ -44,7 +44,7 @@ class Cliente extends Model
 		'monto_suscripcion' => 'float',
 		'fecha_registro' => 'datetime',
 		'fecha_fin_suscripcion' => 'datetime',
-		'estado_suscripcion' => 'bool'
+		'estado_suscripcion' => 'string'
 	];
 
 	protected $fillable = [
