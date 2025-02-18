@@ -352,6 +352,12 @@ return [
                 ],
             ],
         ],
+        [
+            'text' => 'Menús',
+            'icon' => 'fas fa-utensils',
+            'url' => '/menus',
+            'can' => 'manage-menus',
+        ],
 
         // Métodos de Pago
         [
