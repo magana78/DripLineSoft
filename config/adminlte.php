@@ -63,7 +63,7 @@ return [
     |
     */
 
-    'logo' => '<b>DripLine</b>Soft',
+    'logo' => '<b>ripLine</b>Soft',
     'logo_img' => 'vendor/adminlte/dist/img/descarga.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
@@ -323,6 +323,11 @@ return [
                 'text' => 'Sucursales',
                 'icon' => 'fas fa-store',
                 'submenu' => [
+                    [
+                        'text' => 'Agregar',
+                        'icon' => 'fas fa-plus',
+                        'url' => '/sucursales/create', 
+                    ],
                     [
                         'text' => 'Activas',
                         'icon' => 'fas fa-check-circle',
