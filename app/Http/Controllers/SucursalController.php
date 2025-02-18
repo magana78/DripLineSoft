@@ -7,24 +7,28 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;  // Importación correcta
 use App\Models\Usuario; // Importa el modelo correcto
 use App\Models\Sucursale; // Importa el modelo correcto
+use Illuminate\Support\Facades\Log; // 📌 Importar el log
+
 
 
 
 class SucursalController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
-{
-    $sucursales = Sucursale::all(); // Obtener todas las sucursales
-    return view('sucursales.index', compact('sucursales'));
-}
+    {
+        $sucursales = Sucursale::where('activa', true)->get(); // Filtrar solo las sucursales activas
+        return view('sucursales.index', compact('sucursales'));
+    }
 
+    
+    public function inactivas()
+    {
+        $sucursales = Sucursale::where('activa', false)->get();
+        return view('sucursales.inactivas', compact('sucursales'));
+    }
+    
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('sucursales.create'); // No necesitas pasar clientes manualmente
@@ -82,6 +86,8 @@ class SucursalController extends Controller
         
         return redirect()->route('sucursales.index')->with('success', 'Sucursal registrada exitosamente.');
     }
+
+
     public function toggleEstado($id)
     {
         $sucursal = Sucursale::findOrFail($id);
@@ -110,13 +116,64 @@ class SucursalController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+
+
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $usuario = Auth::user();
+
+            if (!$usuario) {
+                return redirect()->route('login')->with('error', 'Debes iniciar sesión para continuar.');
+            }
+
+            // Buscar la sucursal
+            $sucursal = Sucursale::findOrFail($id);
+            
+            // Validar los datos del formulario
+            $request->validate([
+                'nombre_sucursal' => 'required|string|max:255',
+                'direccion' => 'nullable|string',
+                'lat' => 'required|numeric',
+                'lng' => 'required|numeric',
+                'telefono' => 'required|digits_between:8,10',
+                'hora_inicio' => 'required|date_format:H:i',
+                'hora_fin' => 'required|date_format:H:i',
+                'dias' => 'required|array',
+                'tiempo_entrega_estandar' => 'nullable|integer|min:0',
+            ]);
+
+            // Concatenar los días seleccionados
+            $diasSeleccionados = implode(', ', $request->dias);
+            $horarioAtencion = "{$request->hora_inicio} - {$request->hora_fin} ({$diasSeleccionados})";
+
+            // 📌 Intentar la actualización
+            $resultado = $sucursal->update([
+                'nombre_sucursal' => $request->nombre_sucursal,
+                'direccion' => $request->direccion,
+                'latitud' => $request->lat,
+                'longitud' => $request->lng,
+                'telefono' => $request->telefono,  // 🔥 Corregido aquí
+                'horario_atencion' => $horarioAtencion,
+                'tiempo_entrega_estandar' => $request->tiempo_entrega_estandar,
+            ]);
+
+            // 📌 Registrar si la actualización fue exitosa
+            if ($resultado) {
+                Log::info("Sucursal actualizada correctamente.", ['id' => $id]);
+                return redirect()->route('sucursales.index')->with('success', 'Sucursal actualizada correctamente.');
+            } else {
+                Log::error("❌ Error: La sucursal no se actualizó en la base de datos.", ['id' => $id]);
+                return redirect()->back()->with('error', 'No se pudo actualizar la sucursal.');
+            }
+        } catch (\Exception $e) {
+            // 📌 Capturar cualquier error y guardarlo en el log
+            Log::error("❌ Error en la actualización de la sucursal: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Ocurrió un error inesperado. Verifica los datos e intenta de nuevo.');
+        }
     }
+
+    
 
     /**
      * Remove the specified resource from storage.
