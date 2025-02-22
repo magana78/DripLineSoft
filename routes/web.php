@@ -7,8 +7,7 @@ use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\SucursalController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\MenuController;
-
-
+use App\Http\Controllers\ProductoController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +45,12 @@ Route::middleware(['auth', 'role:admin_cliente'])->group(function () {
     // Rutas de pagos
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::post('/payments/store', [PaymentController::class, 'store'])->name('payments.store');
+
+    //Productos
+    Route::get('/productos/get-menus/{id_sucursal}', [ProductoController::class, 'getMenusBySucursal'])->name('productos.getMenus');
+
+    Route::resource('productos', ProductoController::class);
+
 });
 
 Route::middleware(['auth', 'role:admin_cliente'])->group(function () {

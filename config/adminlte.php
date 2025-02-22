@@ -299,17 +299,7 @@ return [
     */
 
     'menu' => [
-        // Navbar items:
-        [
-            'type' => 'navbar-search',
-            'text' => 'search',
-            'topnav_right' => true,
-        ],
-        [
-            'type' => 'fullscreen-widget',
-            'topnav_right' => true,
-        ]
-        ,
+        
        
 
         // Sidebar items:
@@ -357,6 +347,25 @@ return [
             'icon' => 'fas fa-utensils',
             'url' => '/menus',
             'can' => 'manage-menus',
+        ],
+        [
+            'text' => 'Productos',
+            'icon' => 'fas fa-box',
+            'can' => 'manage-products',
+            'submenu' => [
+                [
+                    'text' => 'Agregar Producto',
+                    'icon' => 'fas fa-plus',
+                    'url' => '/productos/create',
+                    'can' => 'manage-products',
+                ],
+                [
+                    'text' => 'Lista de Productos',
+                    'icon' => 'fas fa-list',
+                    'url' => '/productos',
+                    'can' => 'manage-products',
+                ],
+            ],
         ],
 
         // Métodos de Pago
