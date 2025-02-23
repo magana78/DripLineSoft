@@ -94,7 +94,8 @@
                                     <input type="file" id="imagenes" class="form-control transition-effect" accept="image/*">
                                     <small id="file-limit-warning" class="text-danger d-none">⚠️ Has alcanzado el límite de 4
                                         imágenes.</small>
-                                    <div class="mt-3 d-flex flex-wrap" id="preview-container"></div>
+                                    <ul class="list-group mt-3" id="file-list"></ul>
+
                                     <input type="file" id="imagenes_hidden" name="imagenes[]" multiple class="d-none">
                                 </div>
 
@@ -173,42 +174,75 @@
         });
 
         function updateImagePreview() {
-            let previewContainer = document.getElementById('preview-container');
-            previewContainer.innerHTML = ""; // Limpia las imágenes anteriores
+            let fileList = document.getElementById('file-list');
+            fileList.innerHTML = ""; // Limpia la lista anterior
 
             Array.from(selectedFiles.files).forEach((file, index) => {
                 let reader = new FileReader();
                 reader.onload = function (e) {
-                    let imageContainer = document.createElement('div');
-                    imageContainer.classList.add('position-relative', 'm-2');
-                    imageContainer.style.width = '100px';
-                    imageContainer.style.height = '100px';
+                    let listItem = document.createElement('li');
+                    listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
 
                     let img = document.createElement('img');
                     img.src = e.target.result;
-                    img.classList.add('img-thumbnail');
-                    img.style.width = '100%';
-                    img.style.height = '100%';
+                    img.classList.add('img-thumbnail', 'mr-2');
+                    img.style.width = '50px';
+                    img.style.height = '50px';
                     img.style.objectFit = 'cover';
-                    img.onclick = function () { window.open(img.src, '_blank'); };
 
-                    let closeButton = document.createElement('button');
-                    closeButton.classList.add('btn', 'btn-sm', 'position-absolute', 'top-0', 'end-0', 'text-white', 'bg-dark', 'border-0', 'rounded-circle');
-                    closeButton.innerHTML = '&times;';
-                    closeButton.onclick = function () {
+                    let fileInfo = document.createElement('span');
+                    fileInfo.innerHTML = `<strong>${file.name}</strong> <small class="text-muted">(${(file.size / 1024).toFixed(2)} KB)</small>`;
+
+                    let actions = document.createElement('div');
+
+                    // Botón de ver en pantalla completa con URL temporal
+                    let viewButton = document.createElement('button');
+                    viewButton.classList.add('btn', 'btn-sm', 'btn-outline-primary', 'mr-1');
+                    viewButton.innerHTML = '<i class="fas fa-expand"></i>';
+                    viewButton.onclick = function () {
+                        let blob = new Blob([file], { type: file.type }); // Crear Blob
+                        let blobUrl = URL.createObjectURL(blob); // Generar URL temporal
+                        window.open(blobUrl, '_blank'); // Abrir en una nueva pestaña
+
+                        // Liberar memoria después de abrir
+                        setTimeout(() => {
+                            URL.revokeObjectURL(blobUrl);
+                        }, 5000); // La URL se revoca después de 5 segundos
+                    };
+
+
+                    // Botón de descargar (Solo en local no funciona, pero en servidor sí)
+                    let downloadButton = document.createElement('a');
+                    downloadButton.href = e.target.result;
+                    downloadButton.download = file.name;
+                    downloadButton.classList.add('btn', 'btn-sm', 'btn-outline-success', 'mr-1');
+                    downloadButton.innerHTML = '<i class="fas fa-download"></i>';
+
+                    // Botón de eliminar
+                    let deleteButton = document.createElement('button');
+                    deleteButton.classList.add('btn', 'btn-sm', 'btn-outline-danger');
+                    deleteButton.innerHTML = '<i class="fas fa-times"></i>';
+                    deleteButton.onclick = function () {
                         selectedFiles.items.remove(index);
                         updateImagePreview();
                         updateFileInput();
                         toggleFileInputVisibility();
                     };
 
-                    imageContainer.appendChild(img);
-                    imageContainer.appendChild(closeButton);
-                    previewContainer.appendChild(imageContainer);
+                    actions.appendChild(viewButton);
+                    actions.appendChild(downloadButton);
+                    actions.appendChild(deleteButton);
+
+                    listItem.appendChild(img);
+                    listItem.appendChild(fileInfo);
+                    listItem.appendChild(actions);
+
+                    fileList.appendChild(listItem);
                 };
                 reader.readAsDataURL(file);
             });
         }
+
 
         // **Actualiza el input hidden con las imágenes seleccionadas**
         function updateFileInput() {
