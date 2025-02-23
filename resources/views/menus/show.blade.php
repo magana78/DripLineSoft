@@ -1,97 +1,188 @@
 @extends('layouts.app')
 
 @section('content_header')
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="text-primary">Productos del Menú: {{ $menu->nombre_menu }}</h2>
-        <a href="{{ route('productos.create') }}" class="btn btn-primary shadow rounded-circle"
-           style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-plus"></i>
-        </a>
-    </div>
+
 @endsection
 
 @section('content')
-<div class="container"> <!-- Aseguramos que el contenido no sea full width -->
-    <div class="card mb-4 shadow-lg">
-        <div class="card-body">
-            <h4 class="text-primary">{{ $menu->nombre_menu }}</h4>
-            <p><strong>Categoría:</strong> {{ ucfirst($menu->categoria) }}</p>
-            <p><strong>Sucursal:</strong> {{ $menu->sucursale->nombre_sucursal ?? 'No asignada' }}</p>
-        </div>
-    </div>
+    <div class="container"> <!-- Un solo contenedor general -->
+        <div class="card mb-4 shadow-lg"> <!-- Un solo card para toda la vista -->
+            <div class="card-body">
 
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+                <!-- Sección de Información del Menú -->
+                <h3 class="text-center text-primary font-weight-bold mb-3">Información del Menú</h3>
 
-    @if($productos->isEmpty())
-        <div class="alert alert-warning">No hay productos registrados en este menú.</div>
-    @else
-        <div class="row"> <!-- Controla el tamaño de las cards -->
-            @foreach($productos as $producto)
-                <div class="col-lg-4 col-md-6 mb-4 d-flex align-items-stretch"> <!-- Se asegura que todas las cards tengan el mismo alto -->
-                    <div class="card shadow-lg h-100 d-flex flex-column mx-auto" style="max-width: 320px;"> <!-- Máximo ancho y centrado -->
-                        <div class="card-img-top text-center p-3 overflow-hidden" style="max-height: 200px;">
-                            @if($producto->imagenes_productos->count() > 1)
-                                <!-- Carousel de Bootstrap 4 -->
-                                <div id="carouselProducto{{ $producto->id_producto }}" class="carousel slide" data-ride="carousel">
-                                    <div class="carousel-inner">
-                                        @foreach($producto->imagenes_productos as $index => $imagen)
-                                            <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                                                <img src="{{ asset('storage/' . $imagen->ruta_imagen) }}" 
-                                                    alt="{{ $producto->nombre_producto }}" 
-                                                    class="d-block w-100 rounded img-carousel"
-                                                    style="height: 200px; object-fit: cover;">
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                    <a class="carousel-control-prev" href="#carouselProducto{{ $producto->id_producto }}" role="button" data-slide="prev">
-                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                        <span class="sr-only">Anterior</span>
-                                    </a>
-                                    <a class="carousel-control-next" href="#carouselProducto{{ $producto->id_producto }}" role="button" data-slide="next">
-                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                        <span class="sr-only">Siguiente</span>
-                                    </a>
-                                </div>
-                            @elseif($producto->imagenes_productos->isNotEmpty())
-                                <img src="{{ asset('storage/' . $producto->imagenes_productos->first()->ruta_imagen) }}" 
-                                    alt="{{ $producto->nombre_producto }}" 
-                                    class="img-fluid rounded img-carousel"
-                                    style="width: 100%; height: 200px; object-fit: cover;">
-                            @else
-                                <img src="{{ asset('images/default-product.png') }}" 
-                                    alt="Sin imagen" class="img-fluid rounded img-carousel"
-                                    style="width: 100%; height: 200px; object-fit: cover;">
-                            @endif
+                <div class="card p-3 shadow-sm"> <!-- Tarjeta contenedora -->
+                    <div class="row align-items-center text-center">
+                        <div class="col-md-4">
+                            <p><strong>Nombre:</strong> {{ ucfirst($menu->nombre_menu) }}</p>
+
                         </div>
-
-                        <div class="card-body flex-grow-1">
-                            <h5 class="card-title text-primary">{{ $producto->nombre_producto }}</h5>
-                            <p class="card-text"><strong>Descripción:</strong> {{ $producto->descripcion ?? 'Sin descripción' }}</p>
-                            <p class="card-text"><strong>Precio:</strong> ${{ number_format($producto->precio, 2) }}</p>
-                            <p class="card-text"><strong>Disponibilidad:</strong>
-                                <span class="badge {{ $producto->disponible ? 'badge-success' : 'badge-danger' }}">
-                                    {{ $producto->disponible ? 'Disponible' : 'No disponible' }}
-                                </span>
-                            </p>
+                        <div class="col-md-4">
+                            <p><strong>Categoría:</strong> {{ ucfirst($menu->categoria) }}</p>
                         </div>
-                        <div class="card-footer text-center">
-                            <a href="{{ route('productos.show', $producto->id_producto) }}" class="btn btn-sm btn-primary">
-                                Ver Detalles
-                            </a>
+                        <div class="col-md-4">
+                            <p><strong>Sucursal:</strong> {{ $menu->sucursale->nombre_sucursal ?? 'No asignada' }}</p>
                         </div>
                     </div>
-                </div>
-            @endforeach
-        </div>
-    @endif
-</div> <!-- Cierre del container -->
+                </div> <!-- Fin de la tarjeta -->
+
+                <!-- Mensajes de éxito -->
+                @if(session('success'))
+                    <div class="alert alert-success mt-3">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <!-- Verificación de productos -->
+                @if($productos->isEmpty())
+                    <div class="alert alert-warning mt-3">No hay productos registrados en este menú.</div>
+                @else
+                    <!-- Título de la sección del carrusel -->
+                    <h3 class="text-start text-primary font-weight-bold mt-4">Lista de Productos</h3>
+                    <p class="text-start text-muted mb-4">Cantidad de productos: {{ $productos->count() }}</p>
+
+                    <div class="position-relative">
+                        
+                        <!-- Contenedor del carrusel -->
+                        <div id="productosCarousel" class="d-flex overflow-hidden pb-3 pt-3"
+                            style="scroll-behavior: smooth; gap: 20px; flex-wrap: nowrap; white-space: nowrap;">
+                            <!-- Corrección aquí -->
+
+                            @foreach($productos as $producto)
+                                <div class="card shadow-lg h-100 d-flex flex-column mx-auto"
+                                    style="min-width: 360px; max-width: 360px; flex-shrink: 0; min-height: auto;">
+                                    <!-- Altura automática -->
+
+                                    <!-- Imagen del producto -->
+                                    <div class="card-img-top text-center p-3 overflow-hidden" style="max-height: 200px;">
+                                        @if($producto->imagenes_productos->count() > 1)
+                                            <div id="carouselProducto{{ $producto->id_producto }}" class="carousel slide"
+                                                data-ride="carousel">
+                                                <div class="carousel-inner">
+                                                    @foreach($producto->imagenes_productos as $index => $imagen)
+                                                        <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                                                            <img src="{{ asset('storage/' . $imagen->ruta_imagen) }}"
+                                                                alt="{{ $producto->nombre_producto }}"
+                                                                class="d-block w-100 rounded img-carousel"
+                                                                style="height: 200px; object-fit: cover;">
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                                <a class="carousel-control-prev" href="#carouselProducto{{ $producto->id_producto }}"
+                                                    role="button" data-slide="prev">
+                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                    <span class="sr-only">Anterior</span>
+                                                </a>
+                                                <a class="carousel-control-next" href="#carouselProducto{{ $producto->id_producto }}"
+                                                    role="button" data-slide="next">
+                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                    <span class="sr-only">Siguiente</span>
+                                                </a>
+                                            </div>
+                                        @elseif($producto->imagenes_productos->isNotEmpty())
+                                            <img src="{{ asset('storage/' . $producto->imagenes_productos->first()->ruta_imagen) }}"
+                                                alt="{{ $producto->nombre_producto }}" class="img-fluid rounded img-carousel"
+                                                style="width: 100%; height: 200px; object-fit: cover;">
+                                        @else
+                                            <img src="{{ asset('images/default-product.png') }}" alt="Sin imagen"
+                                                class="img-fluid rounded img-carousel"
+                                                style="width: 100%; height: 200px; object-fit: cover;">
+                                        @endif
+                                    </div>
+
+                                    <!-- Contenido de la tarjeta -->
+                                    <div class="card-body flex-grow-1">
+                                        <h5 class="card-title text-primary">{{ $producto->nombre_producto }}</h5>
+                                        <p class="card-text"><strong>Descripción:</strong>
+                                            {{ $producto->descripcion ?? 'Sin descripción' }}</p>
+                                        <p class="card-text"><strong>Precio:</strong> ${{ number_format($producto->precio, 2) }}</p>
+                                        <p class="card-text"><strong>Disponibilidad:</strong>
+                                            <span class="badge {{ $producto->disponible ? 'badge-success' : 'badge-danger' }}">
+                                                {{ $producto->disponible ? 'Disponible' : 'No disponible' }}
+                                            </span>
+                                        </p>
+                                    </div>
+
+                                    <!-- Footer de la tarjeta con botones alineados -->
+                                    <div class="card-footer d-flex align-items-center">
+                                        <!-- Botón "Ver Detalles" centrado -->
+                                        <div class="flex-grow-1 d-flex justify-content-center">
+                                            <a href="{{ route('productos.show', $producto->id_producto) }}"
+                                                class="btn btn-sm btn-primary">
+                                                Ver Detalles
+                                            </a>
+                                        </div>
+
+                                        <!-- Botón de opciones alineado a la derecha -->
+                                        <div class="dropdown ml-auto">
+                                            <button class="btn btn-link p-0" type="button"
+                                                id="dropdownMenu{{ $producto->id_producto }}" data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-right"
+                                                aria-labelledby="dropdownMenu{{ $producto->id_producto }}">
+                                                <li>
+                                                    <a class="dropdown-item text-primary"
+                                                        href="{{ route('productos.edit', $producto->id_producto) }}">
+                                                        <i class="fas fa-edit"></i> Editar
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <form action="{{ route('productos.destroy', $producto->id_producto) }}"
+                                                        method="POST"
+                                                        onsubmit="return confirm('¿Estás seguro de eliminar este producto?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="dropdown-item text-danger">
+                                                            <i class="fas fa-trash-alt"></i> Eliminar
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <!-- Botones de navegación -->
+                        <button id="prevBtn" class="btn btn-dark position-absolute"
+                            style="top: 50%; left: 0; transform: translateY(-50%); z-index: 10;">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button id="nextBtn" class="btn btn-dark position-absolute"
+                            style="top: 50%; right: 0; transform: translateY(-50%); z-index: 10;">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+
+                @endif
+            </div> <!-- Cierre de card-body -->
+        </div> <!-- Cierre de Card -->
+    </div> <!-- Cierre del container -->
 @endsection
 
+
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let scrollContainer = document.getElementById('productosCarousel');
+        let prevBtn = document.getElementById('prevBtn');
+        let nextBtn = document.getElementById('nextBtn');
+
+        // Configurar desplazamiento automático cuando se presionan los botones
+        prevBtn.addEventListener('click', function () {
+            scrollContainer.scrollBy({ left: -350, behavior: 'smooth' });
+        });
+
+        nextBtn.addEventListener('click', function () {
+            scrollContainer.scrollBy({ left: 350, behavior: 'smooth' });
+        });
+    });
+
     // Cierra las alertas automáticamente después de 5 segundos
     setTimeout(() => {
         let alertas = document.querySelectorAll('.alert');
