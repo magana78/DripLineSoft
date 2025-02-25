@@ -1,123 +1,162 @@
 @extends('layouts.app')
 @section('content_header')
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="text-primary">Registrar Nuevo Producto</h2>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="text-primary">Registrar Nuevo Producto</h2>
+</div>
 @endsection
 
 @section('content')
-    <div class="container mt-1">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card shadow-lg rounded">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">Información del Producto</h4>
+<div class="container mt-1">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg rounded">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Información del Producto</h4>
+                </div>
+                <div class="card-body">
+                    @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                    <div class="card-body">
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
+                    @endif
 
-                        @if ($sucursales->isEmpty())
-                            <div class="alert alert-warning">No tienes sucursales disponibles. Debes registrar al menos una
-                                antes de agregar productos.</div>
-                        @else
-                            <form action="{{ route('productos.store') }}" method="POST" enctype="multipart/form-data">
-                                @csrf
+                    @if ($sucursales->isEmpty())
+                    <div class="alert alert-warning">No tienes sucursales disponibles. Debes registrar al menos una
+                        antes de agregar productos.</div>
+                    @else
+                    <form action="{{ route('productos.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
 
-                                <!-- Selección de Sucursal -->
-                                <div class="form-group">
-                                    <label for="id_sucursal">Sucursal</label>
-                                    <select id="id_sucursal" name="id_sucursal" class="form-control">
-                                        <option value="">Seleccione una sucursal</option>
-                                        @foreach ($sucursales as $sucursal)
-                                            <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->nombre_sucursal }}</option>
-                                        @endforeach
+                        <!-- Selección de Sucursal -->
+                        <div class="form-group">
+                            <label for="id_sucursal">Sucursal</label>
+                            <select id="id_sucursal" name="id_sucursal" class="form-control">
+                                <option value="">Seleccione una sucursal</option>
+                                @foreach ($sucursales as $sucursal)
+                                <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->nombre_sucursal }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Selección de Menú -->
+                        <div class="form-group d-none" id="menu-container">
+                            <label for="id_menu">Menú</label>
+                            <div class="position-relative">
+                                <div class="input-group">
+                                    <select id="id_menu" name="id_menu" class="form-control d-none" disabled>
+                                        <option value="">Seleccione un menú</option>
                                     </select>
-                                </div>
-
-                                <!-- Selección de Menú -->
-                                <div class="form-group d-none" id="menu-container">
-                                    <label for="id_menu">Menú</label>
-                                    <div class="position-relative">
-                                        <div class="input-group">
-                                            <select id="id_menu" name="id_menu" class="form-control d-none" disabled>
-                                                <option value="">Seleccione un menú</option>
-                                            </select>
-                                            <div id="menu-spinner" class="spinner-border text-primary d-none" role="status">
-                                                <span class="sr-only">Cargando...</span>
-                                            </div>
-                                        </div>
+                                    <div id="menu-spinner" class="spinner-border text-primary d-none" role="status">
+                                        <span class="sr-only">Cargando...</span>
                                     </div>
-                                    <div id="menu-alert" class="alert alert-warning mt-2 d-none">Esta sucursal no tiene menús
-                                        registrados.</div>
                                 </div>
+                            </div>
+                            <div id="menu-alert" class="alert alert-warning mt-2 d-none">Esta sucursal no tiene menús
+                                registrados.</div>
+                        </div>
 
-                                <!-- Nombre del Producto -->
-                                <div class="form-floating mb-3">
-                                    <label for="nombre_producto">Nombre del Producto</label>
+                        <!-- Nombre del Producto -->
+                        <div class="form-floating mb-3">
+                            <label for="nombre_producto">Nombre del Producto</label>
 
-                                    <input type="text" class="form-control" id="nombre_producto" name="nombre_producto"
-                                        placeholder="Nombre del Producto" required>
-                                </div>
+                            <input type="text" class="form-control" id="nombre_producto" name="nombre_producto"
+                                placeholder="Nombre del Producto" required>
+                        </div>
 
-                                <!-- Descripción -->
-                                <div class="mb-3">
-                                    <label for="descripcion" class="form-label">Descripción</label>
-                                    <textarea id="descripcion" name="descripcion" class="form-control"></textarea>
-                                </div>
+                        <!-- Descripción -->
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea id="descripcion" name="descripcion" class="form-control"></textarea>
+                        </div>
 
-                                <!-- Precio -->
-                                <div class="mb-3">
-                                    <label for="precio" class="form-label">Precio</label>
-                                    <input type="number" step="0.01" id="precio" name="precio" class="form-control" required>
-                                </div>
+                        <!-- Precio -->
+                        <div class="mb-3">
+                            <label for="precio" class="form-label">Precio</label>
+                            <input type="number" step="0.01" id="precio" name="precio" class="form-control" required>
+                        </div>
 
-                                <!-- Disponibilidad -->
-                                <div class="mb-3">
-                                    <label for="disponible" class="form-label">Disponibilidad</label>
-                                    <select id="disponible" name="disponible" class="form-control">
-                                        <option value="1">Disponible</option>
-                                        <option value="0">No Disponible</option>
-                                    </select>
-                                </div>
+                        <!-- Disponibilidad -->
+                        <div class="mb-3">
+                            <label for="disponible" class="form-label">Disponibilidad</label>
+                            <select id="disponible" name="disponible" class="form-control">
+                                <option value="1">Disponible</option>
+                                <option value="0">No Disponible</option>
+                            </select>
+                        </div>
 
-                                <!-- Imágenes del Producto -->
-                                <div class="mb-3">
-                                    <label class="form-label">Imágenes del Producto (Máx. 4)</label>
-                                    <input type="file" id="imagenes" class="form-control transition-effect" accept="image/*">
-                                    <small id="file-limit-warning" class="text-danger d-none">⚠️ Has alcanzado el límite de 4
-                                        imágenes.</small>
-                                    <ul class="list-group mt-3" id="file-list"></ul>
+                        <!-- Imágenes del Producto -->
+                        <div class="form-group">
+                            <label class="form-label">Imágenes del Producto (Máx. 4)</label>
+                            <ul class="list-group mt-3" id="file-list-edit">
+                                @foreach($producto->imagenes_productos as $imagen)
+                                <li class="list-group-item d-flex justify-content-between align-items-center image-item" data-id="{{ $imagen->id_imagen }}">
+                                    <img src="{{ asset('storage/' . $imagen->ruta_imagen) }}" class="img-thumbnail mr-2" style="width: 50px; height: 50px; object-fit: cover;">
+                                    <span><strong>Imagen actual</strong></span>
+                                    <div>
+                                        <input type="file" class="d-none image-input" name="new_images[]" accept="image/*">
+                                        <button type="button" class="btn btn-sm btn-outline-warning edit-image-btn"><i class="fas fa-edit"></i></button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-image-btn" data-id="{{ $imagen->id_imagen }}"><i class="fas fa-times"></i></button>
+                                    </div>
+                                </li>
+                                @endforeach
+                            </ul>
 
-                                    <input type="file" id="imagenes_hidden" name="imagenes[]" multiple class="d-none">
-                                </div>
+                            <!-- Campo oculto para imágenes actuales -->
+                            @foreach($producto->imagenes_productos as $imagen)
+                            <input type="hidden" name="existing_images[]" value="{{ $imagen->id_imagen }}">
+                            @endforeach
+
+                            <input type="file" id="imagenes_edit" name="imagenes[]" class="form-control mt-2" accept="image/*" multiple>
+                            <small id="file-limit-warning-edit" class="text-danger d-none">⚠️ Máximo de 4 imágenes alcanzado.</small>
+
+                            <!-- Campo oculto para imágenes eliminadas -->
+                            <input type="hidden" id="deleted_images" name="deleted_images" value="">
+                        </div>
 
 
-
-
-                                <!-- Botón de Envío -->
-                                <button type="submit" class="btn btn-primary mt-3 w-100">Registrar Producto</button>
-                            </form>
-                        @endif
-                    </div>
+                        <!-- Botón de Envío -->
+                        <button type="submit" class="btn btn-primary mt-3 w-100">Registrar Producto</button>
+                    </form>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        document.getElementById('id_sucursal')?.addEventListener('change', function () {
-            let menuContainer = document.getElementById('menu-container');
-            let menuSelect = document.getElementById('id_menu');
-            let menuAlert = document.getElementById('menu-alert');
-            let menuSpinner = document.getElementById('menu-spinner');
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let deletedImages = [];
+
+        $('#editProductModal').on('shown.bs.modal', function () {
+            console.log("Modal de edición abierto");
+
+            // Precargar datos del producto
+            $('#nombre_producto_edit').val("{{ $producto->nombre_producto }}");
+            $('#descripcion_edit').val("{{ $producto->descripcion }}");
+            $('#precio_edit').val("{{ $producto->precio }}");
+            $('#id_sucursal_edit').val("{{ $producto->menu->sucursale->id_sucursal }}");
+
+            // Precargar menú si el producto ya tiene uno asignado
+            cargarMenus("{{ $producto->menu->sucursale->id_sucursal }}", "{{ $producto->menu->id_menu }}");
+            verificarCantidadImagenes();
+        });
+
+        // Evento para cambiar la sucursal y cargar menús dinámicamente
+        document.getElementById('id_sucursal_edit')?.addEventListener('change', function () {
+            let sucursalId = this.value;
+            cargarMenus(sucursalId);
+        });
+
+        function cargarMenus(sucursalId, selectedMenu = null) {
+            let menuContainer = document.getElementById('menu-container-edit');
+            let menuSelect = document.getElementById('id_menu_edit');
+            let menuAlert = document.getElementById('menu-alert-edit');
+            let menuSpinner = document.getElementById('menu-spinner-edit');
 
             menuSelect.innerHTML = '<option value="">Seleccione un menú</option>';
             menuSelect.classList.add('d-none');
@@ -126,12 +165,12 @@
             menuAlert.classList.add('d-none');
             menuSpinner.classList.remove('d-none');
 
-            if (!this.value) {
+            if (!sucursalId) {
                 menuContainer.classList.add('d-none');
                 return;
             }
 
-            fetch(`/productos/get-menus/${this.value}`)
+            fetch(`/productos/get-menus/${sucursalId}`)
                 .then(response => response.json())
                 .then(data => {
                     menuSpinner.classList.add('d-none');
@@ -139,10 +178,11 @@
                         menuSelect.classList.remove('d-none');
                         menuSelect.disabled = false;
                         data.forEach(menu => {
-                            menuSelect.innerHTML += `<option value="${menu.id_menu}">${menu.nombre_menu}</option>`;
+                            let selected = selectedMenu && selectedMenu == menu.id_menu ? "selected" : "";
+                            menuSelect.innerHTML += `<option value="${menu.id_menu}" ${selected}>${menu.nombre_menu}</option>`;
                         });
                     } else {
-                        menuAlert.classList.remove('d-none');
+                        menuAlert.removeClass('d-none');
                     }
                 })
                 .catch(error => {
@@ -150,34 +190,55 @@
                     alert('Hubo un error al cargar los menús. Inténtelo de nuevo.');
                     menuSpinner.classList.add('d-none');
                 });
+        }
+
+        // Editar imagen existente
+        document.querySelectorAll('.edit-image-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                let inputFile = this.previousElementSibling;
+                inputFile.click();
+
+                inputFile.addEventListener('change', function (event) {
+                    let file = event.target.files[0];
+                    if (file) {
+                        let reader = new FileReader();
+                        reader.onload = function (e) {
+                            let img = inputFile.closest('li').querySelector('img');
+                            img.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            });
         });
 
-        let selectedFiles = new DataTransfer();
+        // Eliminar imagen
+        document.querySelectorAll('.remove-image-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                let listItem = this.closest('li');
+                let imageId = this.dataset.id;
 
-        document.getElementById('imagenes').addEventListener('change', function (event) {
-            let previewContainer = document.getElementById('preview-container');
-            let file = event.target.files[0];
+                if (imageId) {
+                    deletedImages.push(imageId);
+                    document.getElementById('deleted_images').value = deletedImages.join(",");
+                }
 
-            if (!file) return; // Si no se seleccionó nada, salir
-
-            if (selectedFiles.files.length >= 4) {
-                alert('Solo puedes agregar un máximo de 4 imágenes.');
-                return;
-            }
-
-            selectedFiles.items.add(file);
-            updateImagePreview();
-            updateFileInput();
-            toggleFileInputVisibility();
-
-            event.target.value = ""; // Resetear el input para permitir nuevas selecciones
+                listItem.remove();
+                verificarCantidadImagenes();
+            });
         });
 
-        function updateImagePreview() {
-            let fileList = document.getElementById('file-list');
-            fileList.innerHTML = ""; // Limpia la lista anterior
+        // Evento para agregar nuevas imágenes
+        document.getElementById('imagenes_edit').addEventListener('change', function (event) {
+            let fileList = document.getElementById('file-list-edit');
+            let maxFiles = 4;
 
-            Array.from(selectedFiles.files).forEach((file, index) => {
+            Array.from(event.target.files).forEach(file => {
+                if (fileList.childElementCount >= maxFiles) {
+                    document.getElementById('file-limit-warning-edit').classList.remove('d-none');
+                    return;
+                }
+
                 let reader = new FileReader();
                 reader.onload = function (e) {
                     let listItem = document.createElement('li');
@@ -191,87 +252,30 @@
                     img.style.objectFit = 'cover';
 
                     let fileInfo = document.createElement('span');
-                    fileInfo.innerHTML = `<strong>${file.name}</strong> <small class="text-muted">(${(file.size / 1024).toFixed(2)} KB)</small>`;
+                    fileInfo.innerHTML = `<strong>Nueva imagen</strong>`;
 
                     let actions = document.createElement('div');
 
-                    // Botón de ver en pantalla completa con URL temporal
-                    let viewButton = document.createElement('button');
-                    viewButton.classList.add('btn', 'btn-sm', 'btn-outline-primary', 'mr-1');
-                    viewButton.innerHTML = '<i class="fas fa-expand"></i>';
-                    viewButton.onclick = function () {
-                        let blob = new Blob([file], { type: file.type }); // Crear Blob
-                        let blobUrl = URL.createObjectURL(blob); // Generar URL temporal
-                        window.open(blobUrl, '_blank'); // Abrir en una nueva pestaña
-
-                        // Liberar memoria después de abrir
-                        setTimeout(() => {
-                            URL.revokeObjectURL(blobUrl);
-                        }, 5000); // La URL se revoca después de 5 segundos
-                    };
-
-
-                    // Botón de descargar (Solo en local no funciona, pero en servidor sí)
-                    let downloadButton = document.createElement('a');
-                    downloadButton.href = e.target.result;
-                    downloadButton.download = file.name;
-                    downloadButton.classList.add('btn', 'btn-sm', 'btn-outline-success', 'mr-1');
-                    downloadButton.innerHTML = '<i class="fas fa-download"></i>';
-
-                    // Botón de eliminar
                     let deleteButton = document.createElement('button');
                     deleteButton.classList.add('btn', 'btn-sm', 'btn-outline-danger');
                     deleteButton.innerHTML = '<i class="fas fa-times"></i>';
                     deleteButton.onclick = function () {
-                        selectedFiles.items.remove(index);
-                        updateImagePreview();
-                        updateFileInput();
-                        toggleFileInputVisibility();
+                        listItem.remove();
+                        verificarCantidadImagenes();
                     };
 
-                    actions.appendChild(viewButton);
-                    actions.appendChild(downloadButton);
                     actions.appendChild(deleteButton);
-
                     listItem.appendChild(img);
                     listItem.appendChild(fileInfo);
                     listItem.appendChild(actions);
-
                     fileList.appendChild(listItem);
                 };
                 reader.readAsDataURL(file);
             });
-        }
 
+            verificarCantidadImagenes();
+        });
+    });
+</script>
 
-        // **Actualiza el input hidden con las imágenes seleccionadas**
-        function updateFileInput() {
-            document.getElementById('imagenes_hidden').files = selectedFiles.files;
-        }
-
-        // **Ocultar o mostrar el input de selección de archivos**
-        function toggleFileInputVisibility() {
-            let fileInput = document.getElementById('imagenes');
-            let fileLimitWarning = document.getElementById('file-limit-warning');
-
-            if (selectedFiles.files.length >= 4) {
-                fileInput.classList.add('hidden'); // Aplica la animación de ocultar
-                setTimeout(() => {
-                    fileInput.classList.add('d-none'); // Oculta completamente después de la animación
-                }, 300);
-                fileLimitWarning.classList.remove('d-none'); // Muestra el mensaje de advertencia
-            } else {
-                fileLimitWarning.classList.add('d-none'); // Oculta el mensaje si hay menos de 4 imágenes
-                fileInput.classList.remove('d-none'); // Muestra el input de nuevo
-                setTimeout(() => {
-                    fileInput.classList.remove('hidden'); // Aplica la animación de mostrar
-                }, 10);
-            }
-        }
-
-        
-
-
-
-    </script>
 @endsection

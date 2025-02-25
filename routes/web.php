@@ -48,6 +48,8 @@ Route::middleware(['auth', 'role:admin_cliente'])->group(function () {
 
     //Productos
     Route::get('/productos/get-menus/{id_sucursal}', [ProductoController::class, 'getMenusBySucursal'])->name('productos.getMenus');
+    Route::post('/productos/{id}/toggle', [ProductoController::class, 'toggleEstado'])->name('productos.toggle');
+
 
     Route::resource('productos', ProductoController::class);
 
@@ -56,6 +58,8 @@ Route::middleware(['auth', 'role:admin_cliente'])->group(function () {
 Route::middleware(['auth', 'role:admin_cliente'])->group(function () {
     Route::resource('menus', MenuController::class);
 });
+
+
 
 
 Auth::routes();
