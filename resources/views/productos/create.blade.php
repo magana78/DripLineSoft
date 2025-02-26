@@ -131,7 +131,9 @@
                 return;
             }
 
-            fetch(`/productos/get-menus/${this.value}`)
+
+            fetch(/productos/get-menus/${this.value})
+
                 .then(response => response.json())
                 .then(data => {
                     menuSpinner.classList.add('d-none');
@@ -139,7 +141,9 @@
                         menuSelect.classList.remove('d-none');
                         menuSelect.disabled = false;
                         data.forEach(menu => {
-                            menuSelect.innerHTML += `<option value="${menu.id_menu}">${menu.nombre_menu}</option>`;
+
+                            menuSelect.innerHTML += <option value="${menu.id_menu}">${menu.nombre_menu}</option>;
+
                         });
                     } else {
                         menuAlert.classList.remove('d-none');
@@ -191,7 +195,9 @@
                     img.style.objectFit = 'cover';
 
                     let fileInfo = document.createElement('span');
-                    fileInfo.innerHTML = `<strong>${file.name}</strong> <small class="text-muted">(${(file.size / 1024).toFixed(2)} KB)</small>`;
+
+                    fileInfo.innerHTML = <strong>${file.name}</strong> <small class="text-muted">(${(file.size / 1024).toFixed(2)} KB)</small>;
+
 
                     let actions = document.createElement('div');
 
@@ -199,7 +205,10 @@
                     let viewButton = document.createElement('button');
                     viewButton.classList.add('btn', 'btn-sm', 'btn-outline-primary', 'mr-1');
                     viewButton.innerHTML = '<i class="fas fa-expand"></i>';
-                    viewButton.onclick = function () {
+
+                    viewButton.onclick = function (event) {
+                        event.preventDefault();
+
                         let blob = new Blob([file], { type: file.type }); // Crear Blob
                         let blobUrl = URL.createObjectURL(blob); // Generar URL temporal
                         window.open(blobUrl, '_blank'); // Abrir en una nueva pestaña
@@ -222,7 +231,10 @@
                     let deleteButton = document.createElement('button');
                     deleteButton.classList.add('btn', 'btn-sm', 'btn-outline-danger');
                     deleteButton.innerHTML = '<i class="fas fa-times"></i>';
-                    deleteButton.onclick = function () {
+
+                    deleteButton.onclick = function (event) {
+                        event.preventDefault();
+
                         selectedFiles.items.remove(index);
                         updateImagePreview();
                         updateFileInput();
@@ -271,7 +283,6 @@
 
 
 
-
-
     </script>
 @endsection
+
