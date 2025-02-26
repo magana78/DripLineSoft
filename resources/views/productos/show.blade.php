@@ -25,77 +25,77 @@
     @endif
 
     <div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow-lg">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <a href="{{ route('productos.index') }}" class="btn me-2" data-bs-toggle="tooltip" title="Regresar">
-                    <i class="fas fa-arrow-left"></i>
-                </a>
-                <h4 class="mb-0">Detalles del Producto</h4>
-            </div>
-            <div class="card-body">
-                <h3 class="text-primary">{{ $producto->nombre_producto }}</h3>
-                <p><strong>📖 Descripción:</strong> {{ $producto->descripcion }}</p>
-                <p><strong>💰 Precio:</strong> ${{ number_format($producto->precio, 2) }}</p>
-                <p><strong>📌 Disponible:</strong> 
-                    {!! $producto->disponible 
-                        ? '<span class="badge badge-success">Sí</span>' 
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <a href="{{ route('productos.index') }}" class="btn me-2" data-bs-toggle="tooltip" title="Regresar">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <h4 class="mb-0">Detalles del Producto</h4>
+                </div>
+                <div class="card-body">
+                    <h3 class="text-primary">{{ $producto->nombre_producto }}</h3>
+                    <p><strong>📖 Descripción:</strong> {{ $producto->descripcion }}</p>
+                    <p><strong>💰 Precio:</strong> ${{ number_format($producto->precio, 2) }}</p>
+                    <p><strong>📌 Disponible:</strong>
+                        {!! $producto->disponible
+                        ? '<span class="badge badge-success">Sí</span>'
                         : '<span class="badge badge-danger">No</span>' !!}
-                </p>
-                <p><strong>🏪 Sucursal:</strong> {{ $producto->menu->sucursale->nombre_sucursal }}</p>
-                <p><strong>📂 Menú:</strong> {{ $producto->menu->nombre_menu }}</p>
+                    </p>
+                    <p><strong>🏪 Sucursal:</strong> {{ $producto->menu->sucursale->nombre_sucursal }}</p>
+                    <p><strong>📂 Menú:</strong> {{ $producto->menu->nombre_menu }}</p>
 
-                <!-- 🔹 Galería de imágenes con tamaño consistente -->
-                @if($producto->imagenes_productos->count() > 1)
-                <div id="carouselProducto" class="carousel slide" data-ride="carousel" style="max-width: 400px; margin: auto;">
-                    <ol class="carousel-indicators">
-                        @foreach($producto->imagenes_productos as $key => $imagen)
-                        <li data-target="#carouselProducto" data-slide-to="{{ $key }}" class="{{ $key == 0 ? 'active' : '' }}"></li>
-                        @endforeach
-                    </ol>
-                    <div class="carousel-inner">
-                        @foreach($producto->imagenes_productos as $key => $imagen)
-                        <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                            <div class="image-container">
-                                <img src="{{ asset('storage/' . $imagen->ruta_imagen) }}" class="d-block w-100 img-fluid" alt="Imagen del producto">
+                    <!-- 🔹 Galería de imágenes con tamaño consistente -->
+                    @if($producto->imagenes_productos->count() > 1)
+                    <div id="carouselProducto" class="carousel slide" data-ride="carousel" style="max-width: 400px; margin: auto;">
+                        <ol class="carousel-indicators">
+                            @foreach($producto->imagenes_productos as $key => $imagen)
+                            <li data-target="#carouselProducto" data-slide-to="{{ $key }}" class="{{ $key == 0 ? 'active' : '' }}"></li>
+                            @endforeach
+                        </ol>
+                        <div class="carousel-inner">
+                            @foreach($producto->imagenes_productos as $key => $imagen)
+                            <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                <div class="image-container">
+                                    <img src="{{ asset('storage/' . $imagen->ruta_imagen) }}" class="d-block w-100 img-fluid" alt="Imagen del producto">
+                                </div>
                             </div>
+                            @endforeach
                         </div>
-                        @endforeach
+                        <a class="carousel-control-prev" href="#carouselProducto" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Anterior</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselProducto" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Siguiente</span>
+                        </a>
                     </div>
-                    <a class="carousel-control-prev" href="#carouselProducto" role="button" data-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Anterior</span>
-                    </a>
-                    <a class="carousel-control-next" href="#carouselProducto" role="button" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Siguiente</span>
-                    </a>
-                </div>
 
-                @elseif($producto->imagenes_productos->count() == 1)
-                <div class="image-container">
-                    <img src="{{ asset('storage/' . $producto->imagenes_productos->first()->ruta_imagen) }}" class="d-block w-100 img-fluid" alt="Imagen del producto">
-                </div>
-                @else
-                <p class="text-muted text-center">📷 No hay imágenes disponibles</p>
-                @endif
+                    @elseif($producto->imagenes_productos->count() == 1)
+                    <div class="image-container">
+                        <img src="{{ asset('storage/' . $producto->imagenes_productos->first()->ruta_imagen) }}" class="d-block w-100 img-fluid" alt="Imagen del producto">
+                    </div>
+                    @else
+                    <p class="text-muted text-center">📷 No hay imágenes disponibles</p>
+                    @endif
 
-                <div class="d-flex justify-content-end mt-3">
-                    <button type="button" class="btn action-btn edit-btn mr-2" data-toggle="modal" data-target="#editProductModal" title="Editar">
-                        <i class="fas fa-edit"></i>
-                    </button>
-
-                    <form action="{{ route('productos.toggle', $producto->id_producto) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn action-btn toggle-btn" data-toggle="tooltip" title="Habilitar/Deshabilitar">
-                            <i class="fas {{ $producto->disponible ? 'fa-toggle-on text-success' : 'fa-toggle-off text-danger' }}"></i>
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="button" class="btn action-btn edit-btn mr-2" data-toggle="modal" data-target="#editProductModal" title="Editar">
+                            <i class="fas fa-edit"></i>
                         </button>
-                    </form>
+
+                        <form action="{{ route('productos.toggle', $producto->id_producto) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn action-btn toggle-btn" data-toggle="tooltip" title="Habilitar/Deshabilitar">
+                                <i class="fas {{ $producto->disponible ? 'fa-toggle-on text-success' : 'fa-toggle-off text-danger' }}"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 </div>
 
@@ -331,10 +331,17 @@
                     let deleteButton = document.createElement('button');
                     deleteButton.classList.add('btn', 'btn-sm', 'btn-outline-danger');
                     deleteButton.innerHTML = '<i class="fas fa-times"></i>';
+
                     deleteButton.onclick = function() {
                         listItem.remove();
+
+                        // Eliminar la imagen del input file (no la enviará al servidor)
+                        let fileInput = document.getElementById('imagenes_edit');
+                        fileInput.value = ""; // Vaciar el input file
+
                         verificarCantidadImagenes();
                     };
+
 
                     actions.appendChild(deleteButton);
                     listItem.appendChild(img);
@@ -354,7 +361,10 @@
             let fileLimitWarning = document.getElementById('file-limit-warning-edit');
             let fileList = document.getElementById('file-list-edit');
 
-            if (fileList.childElementCount >= 4) {
+            // Contamos solo las imágenes visibles
+            let visibleImages = fileList.querySelectorAll('li:not(.d-none)').length;
+
+            if (visibleImages >= 4) {
                 fileInput.classList.add('d-none');
                 fileLimitWarning.classList.remove('d-none');
             } else {
@@ -362,6 +372,7 @@
                 fileLimitWarning.classList.add('d-none');
             }
         }
+
 
         // Inicialización
         verificarCantidadImagenes();
