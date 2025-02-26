@@ -199,7 +199,9 @@
                     let viewButton = document.createElement('button');
                     viewButton.classList.add('btn', 'btn-sm', 'btn-outline-primary', 'mr-1');
                     viewButton.innerHTML = '<i class="fas fa-expand"></i>';
-                    viewButton.onclick = function () {
+                    viewButton.onclick = function (event) {
+                        event.preventDefault(); // Evita que se envíe el formulario
+
                         let blob = new Blob([file], { type: file.type }); // Crear Blob
                         let blobUrl = URL.createObjectURL(blob); // Generar URL temporal
                         window.open(blobUrl, '_blank'); // Abrir en una nueva pestaña
@@ -222,7 +224,9 @@
                     let deleteButton = document.createElement('button');
                     deleteButton.classList.add('btn', 'btn-sm', 'btn-outline-danger');
                     deleteButton.innerHTML = '<i class="fas fa-times"></i>';
-                    deleteButton.onclick = function () {
+                    deleteButton.onclick = function (event) {
+                        event.preventDefault(); // Evita que el formulario se envíe
+
                         selectedFiles.items.remove(index);
                         updateImagePreview();
                         updateFileInput();
@@ -268,9 +272,6 @@
                 }, 10);
             }
         }
-
-        
-
 
 
     </script>
