@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MenuController;
@@ -6,7 +7,6 @@ use App\Http\Controllers\PagoController;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\ProductoController;
 
 
 use App\Http\Controllers\RegistroController;
@@ -16,7 +16,7 @@ use App\Http\Controllers\PerfilController;
 use App\Http\Middleware\CheckSubscription;
 
 Route::get('/', function () {
-    return redirect('/login');
+    return redirect('/login');  
 });
 
 Route::post('/logout', function () {
@@ -40,8 +40,6 @@ Route::post('/paypal/capture-order', [PayPalController::class, 'captureOrder']);
 // ✅ Agrupar todas las rutas del "admin_cliente" con middleware de autenticación y rol
 Route::middleware(['auth', 'role:admin_cliente', CheckSubscription::class])->group(function () {
     
-
-
     // Rutas de sucursales
     Route::get('/sucursales/inactivas', [SucursalController::class, 'inactivas'])->name('sucursales.inactivas');
     Route::post('/sucursales/{id}/toggle', [SucursalController::class, 'toggleEstado'])->name('sucursales.toggle');
@@ -50,7 +48,6 @@ Route::middleware(['auth', 'role:admin_cliente', CheckSubscription::class])->gro
     // Rutas de pagos
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::post('/payments/store', [PaymentController::class, 'store'])->name('payments.store');
-
 
     // Rutas de historial de pagos
     Route::get('/dashboard/historial-pagos', [PagoController::class, 'mostrarHistorial'])->name('historial.pagos');
@@ -68,16 +65,8 @@ Route::middleware(['auth', 'role:admin_cliente', CheckSubscription::class])->gro
     Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil');
     Route::post('/perfil/update', [PerfilController::class, 'update'])->name('perfil.update');
 
-    Route::delete('/menus/{menu_id}/productos/{producto_id}', [MenuController::class, 'removeProduct'])
-    ->name('menus.removeProduct');
-
     // Rutas de menús
     Route::resource('menus', MenuController::class);
-
-    Route::get('/productos/get-menus/{id_sucursal}', [ProductoController::class, 'getMenusBySucursal'])->name('productos.getMenus');
-    Route::post('/productos/{id}/toggle', [ProductoController::class, 'toggleEstado'])->name('productos.toggle');
-    Route::resource('productos', ProductoController::class);
-
 
 
 });

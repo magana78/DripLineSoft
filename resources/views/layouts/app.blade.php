@@ -1,7 +1,6 @@
 
 @extends('adminlte::page')
 
-@section('title', 'Dashboard')
 
 @section('content_header')
 
@@ -15,6 +14,8 @@
     {{-- Add here extra stylesheets --}}
     {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
     @vite(['resources/css/app.css'])
+
+    
 
 @stop
 

@@ -11,6 +11,7 @@
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.6",
+        "psy/psysh": "^0.12.7",
         "srmklive/paypal": "^3.0"
     },
     "require-dev": {

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;  // Importación correcta
 
 class MenuController extends Controller
 {
-   
+
     public function index()
     {
         // Obtener el usuario autenticado
@@ -30,16 +30,16 @@ class MenuController extends Controller
 
         // Obtener los menús de esas sucursales
         $menus = Menu::whereIn('id_sucursal', $sucursales->pluck('id_sucursal'))
-                    ->with('sucursale')
-                    ->get();
+            ->with('sucursale')
+            ->get();
 
         // Retornar la vista con los datos
         return view('menus.index', compact('menus', 'sucursales'));
     }
 
 
-   
-   /**
+
+    /**
      * Muestra el formulario para crear un nuevo menú.
      */
     public function create()
@@ -73,19 +73,23 @@ class MenuController extends Controller
         return redirect()->route('menus.index')->with('success', 'Menú creado exitosamente.');
     }
 
-   
-    public function show(string $id)
+
+    public function show($id)
     {
-        //
+        // Buscar el menú con sus productos y la sucursal relacionada
+        $menu = Menu::with(['productos.imagenes_productos', 'sucursale'])->findOrFail($id);
+
+        // Obtener los productos relacionados con este menú
+        $productos = $menu->productos;
+
+        return view('menus.show', compact('menu', 'productos'));
     }
 
-    
     public function edit(string $id)
     {
         //
     }
 
-   
     public function update(Request $request, $id)
     {
         // Validar los datos
@@ -106,8 +110,23 @@ class MenuController extends Controller
         return redirect()->route('menus.index')->with('success', 'Menú actualizado correctamente.');
     }
 
+    public function removeProduct($menu_id, $producto_id)
+    {
+        // Buscar el producto que pertenece a este menú
+        $producto = Producto::where('id_producto', $producto_id)
+            ->where('id_menu', $menu_id)
+            ->first();
 
-   
+        if (!$producto) {
+            return redirect()->back()->with('error', 'El producto no está asociado a este menú.');
+        }
+
+        // Desvincular el producto del menú (id_menu a NULL)
+        $producto->update(['id_menu' => null]);
+
+        return redirect()->route('menus.show', $menu_id)->with('success', 'Producto eliminado del menú exitosamente.');
+    }
+
     public function destroy(string $id)
     {
         //

@@ -154,9 +154,9 @@ return [
 
     'layout_topnav' => null,
     'layout_boxed' => null,
-    'layout_fixed_sidebar' => null,
-    'layout_fixed_navbar' => null,
-    'layout_fixed_footer' => null,
+    'layout_fixed_sidebar' => true,
+    'layout_fixed_navbar' => true,
+    'layout_fixed_footer' => true,
     'layout_dark_mode' => null,
 
     /*
@@ -193,9 +193,9 @@ return [
     'classes_body' => '',
     'classes_brand' => '',
     'classes_brand_text' => '',
-    'classes_content_wrapper' => '',
+    'classes_content_wrapper' => 'overflow-auto',
     'classes_content_header' => '',
-    'classes_content' => '',
+    'classes_content' => 'container-fluid',
     'classes_sidebar' => 'sidebar-dark-primary elevation-4',
     'classes_sidebar_nav' => '',
     'classes_topnav' => 'navbar-white navbar-light',
@@ -299,38 +299,32 @@ return [
     */
 
     'menu' => [
-        // Navbar items:
-        [
-            'type' => 'navbar-search',
-            'text' => 'search',
-            'topnav_right' => true,
-        ],
-        [
-            'type' => 'fullscreen-widget',
-            'topnav_right' => true,
-        ]
-        ,
-       
 
-        // Sidebar items:
+        // Barra de búsqueda en el sidebar
         [
             'type' => 'sidebar-menu-search',
             'text' => 'search',
         ],
 
-         // 📌 Opción del Dashboard (Visible para todos los usuarios autenticados)
+        // Dashboard
         [
             'text' => 'Dashboard',
             'icon' => 'fas fa-tachometer-alt',
-            'url'  => '/dashboard',
-            'can'  => 'access-dashboard', // Se puede controlar con un Gate si es necesario
+            'submenu' => [
+                [
+                    'text' => 'Inicio',
+                    'icon' => 'fas fa-home',
+                    'url' => '/dashboard',
+                    'can' => 'access-dashboard',
+                ],
+            ],
         ],
 
         // Sección de Sucursales con submenús
         [
             'text' => 'Sucursales',
             'icon' => 'fas fa-store',
-            'can' => 'manage-sucursales', // 🔹 Solo los admin_cliente pueden ver esto
+            'can' => 'manage-sucursales',
             'submenu' => [
                 [
                     'text' => 'Agregar',
@@ -352,87 +346,100 @@ return [
                 ],
             ],
         ],
+
+        // Sección de Menús
         [
             'text' => 'Menús',
             'icon' => 'fas fa-utensils',
-            'url' => '/menus',
-            'can' => 'manage-menus',
+            'submenu' => [
+                [
+                    'text' => 'Ver Menús',
+                    'icon' => 'fas fa-list',
+                    'url' => '/menus',
+                    'can' => 'manage-menus',
+                ],
+            ],
+        ],
+
+        // Sección de Productos con submenús
+        [
+            'text' => 'Productos',
+            'icon' => 'fas fa-box',
+            'can' => 'manage-products',
+            'submenu' => [
+                [
+                    'text' => 'Agregar Producto',
+                    'icon' => 'fas fa-plus',
+                    'url' => '/productos/create',
+                    'can' => 'manage-products',
+                ],
+                [
+                    'text' => 'Lista de Productos',
+                    'icon' => 'fas fa-list',
+                    'url' => '/productos',
+                    'can' => 'manage-products',
+                ],
+            ],
         ],
 
         // Métodos de Pago
         [
             'text' => 'Métodos de Pago',
             'icon' => 'fas fa-credit-card',
-            'url' => '/payments',
-            'can' => 'view-payments', // 🔹 Solo los admin_cliente pueden ver esto
-        ],
-            
-        ['header' => 'account_settings'],
-        [
-            'text' => 'profile',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-user',
-        ],
-        [
-            'text' => 'change_password',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
-        ],
-       /* [
-            'text' => 'multilevel',
-            'icon' => 'fas fa-fw fa-share',
             'submenu' => [
                 [
-                    'text' => 'level_one',
+                    'text' => 'Ver Métodos',
+                    'icon' => 'fas fa-list',
+                    'url' => '/payments',
+                    'can' => 'view-payments',
+                ],
+            ],
+        ],
+
+        // Configuración de cuenta
+        ['header' => 'account_settings'],
+        [
+            'text' => 'Configuración',
+            'icon' => 'fas fa-cogs',
+            'submenu' => [
+                [
+                    'text' => 'Perfil',
+                    'icon' => 'fas fa-user',
+                    'url' => 'admin/settings',
+                ],
+                [
+                    'text' => 'Cambiar Contraseña',
+                    'icon' => 'fas fa-lock',
+                    'url' => 'admin/settings',
+                ],
+            ],
+        ],
+
+        // Etiquetas informativas
+        ['header' => 'labels'],
+        [
+            'text' => 'Información',
+            'icon' => 'fas fa-info-circle',
+            'submenu' => [
+                [
+                    'text' => 'Importante',
+                    'icon_color' => 'red',
                     'url' => '#',
                 ],
                 [
-                    'text' => 'level_one',
+                    'text' => 'Advertencia',
+                    'icon_color' => 'yellow',
                     'url' => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                        ],
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                            'submenu' => [
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                            ],
-                        ],
-                    ],
                 ],
                 [
-                    'text' => 'level_one',
+                    'text' => 'Información General',
+                    'icon_color' => 'cyan',
                     'url' => '#',
                 ],
             ],
-        ],*/
-        ['header' => 'labels'],
-        [
-            'text' => 'important',
-            'icon_color' => 'red',
-            'url' => '#',
-        ],
-        [
-            'text' => 'warning',
-            'icon_color' => 'yellow',
-            'url' => '#',
-        ],
-        [
-            'text' => 'information',
-            'icon_color' => 'cyan',
-            'url' => '#',
         ],
     ],
+
 
     /*
     |--------------------------------------------------------------------------
