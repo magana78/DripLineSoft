@@ -405,7 +405,7 @@ return [
                 [
                     'text' => 'Perfil',
                     'icon' => 'fas fa-user',
-                    'url' => 'admin/settings',
+                    'url' => 'perfil',
                 ],
                 [
                     'text' => 'Cambiar Contraseña',
