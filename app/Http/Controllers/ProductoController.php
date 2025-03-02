@@ -95,9 +95,9 @@ class ProductoController extends Controller
             'imagenes.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'deleted_images' => 'nullable|string',
         ]);
-    
+
         $producto = Producto::findOrFail($id);
-    
+
         // 🔹 **Actualizar datos generales del producto**
         $producto->update([
             'nombre_producto' => $request->nombre_producto,
@@ -105,7 +105,7 @@ class ProductoController extends Controller
             'precio' => $request->precio,
             'id_menu' => $request->id_menu,
         ]);
-    
+
         // 🔹 **Manejo de imágenes eliminadas**
         if ($request->has('deleted_images')) {
             $deletedImages = explode(',', $request->deleted_images);
@@ -117,7 +117,7 @@ class ProductoController extends Controller
                 }
             }
         }
-    
+
         // 🔹 **Manejo de imágenes editadas (precargadas)**
         if ($request->hasFile('imagenes')) {
             foreach ($request->file('imagenes') as $imageId => $newImage) {
@@ -126,7 +126,7 @@ class ProductoController extends Controller
                     if ($imagen) {
                         // Eliminar la imagen anterior
                         Storage::disk('public')->delete($imagen->ruta_imagen);
-    
+
                         // Guardar la nueva imagen
                         $path = $newImage->store('productos', 'public');
                         $imagen->update([
@@ -136,28 +136,28 @@ class ProductoController extends Controller
                 }
             }
         }
-    
+
         // 🔹 **Manejo de imágenes nuevas (separadas de las editadas)**
         if ($request->hasFile('imagenes_nuevas')) {
             $totalImages = $producto->imagenes_productos()->count();
             $remainingSlots = 4 - $totalImages;
-    
+
             foreach ($request->file('imagenes_nuevas') as $imagen) {
                 if ($remainingSlots <= 0) break;  // Detener si ya se alcanzó el máximo
-    
+
                 $path = $imagen->store('productos', 'public');
                 ImagenesProducto::create([
                     'id_producto' => $producto->id_producto,
                     'ruta_imagen' => $path
                 ]);
-    
+
                 $remainingSlots--; // Reducir la cantidad de espacios restantes
             }
         }
-    
+
         return redirect()->route('productos.index')->with('success', 'Producto actualizado exitosamente.');
     }
-    
+
 
 
 

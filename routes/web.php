@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect('/login');  
+    return redirect('/login');
 });
 
 Route::post('/logout', function () {
@@ -36,7 +36,7 @@ Route::get('/dashboard/historial-pagos', [PagoController::class, 'mostrarHistori
 
 // ✅ Agrupar todas las rutas del "admin_cliente" con middleware de autenticación y rol
 Route::middleware(['auth', 'role:admin_cliente'])->group(function () {
-    
+
     // Rutas de sucursales
     Route::get('/sucursales/inactivas', [SucursalController::class, 'inactivas'])->name('sucursales.inactivas');
     Route::post('/sucursales/{id}/toggle', [SucursalController::class, 'toggleEstado'])->name('sucursales.toggle');
@@ -52,10 +52,12 @@ Route::middleware(['auth', 'role:admin_cliente'])->group(function () {
 
 
     Route::resource('productos', ProductoController::class);
-
 });
 
 Route::middleware(['auth', 'role:admin_cliente'])->group(function () {
+    Route::delete('/menus/{menu_id}/productos/{producto_id}', [MenuController::class, 'removeProduct'])
+        ->name('menus.removeProduct');
+
     Route::resource('menus', MenuController::class);
 });
 

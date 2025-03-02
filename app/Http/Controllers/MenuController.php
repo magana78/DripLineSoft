@@ -85,13 +85,10 @@ class MenuController extends Controller
         return view('menus.show', compact('menu', 'productos'));
     }
 
-
-
     public function edit(string $id)
     {
         //
     }
-
 
     public function update(Request $request, $id)
     {
@@ -113,7 +110,22 @@ class MenuController extends Controller
         return redirect()->route('menus.index')->with('success', 'Menú actualizado correctamente.');
     }
 
+    public function removeProduct($menu_id, $producto_id)
+    {
+        // Buscar el producto que pertenece a este menú
+        $producto = Producto::where('id_producto', $producto_id)
+            ->where('id_menu', $menu_id)
+            ->first();
 
+        if (!$producto) {
+            return redirect()->back()->with('error', 'El producto no está asociado a este menú.');
+        }
+
+        // Desvincular el producto del menú (id_menu a NULL)
+        $producto->update(['id_menu' => null]);
+
+        return redirect()->route('menus.show', $menu_id)->with('success', 'Producto eliminado del menú exitosamente.');
+    }
 
     public function destroy(string $id)
     {
