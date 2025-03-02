@@ -34,7 +34,6 @@ class RegisterController extends Controller
             'nombre' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:usuarios'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'rol' => ['required', 'string'],
             'nombre_comercial' => ['required', 'string', 'max:255'],
             'direccion' => ['required', 'string', 'max:255'],
             'telefono' => ['required', 'string', 'max:15'],
@@ -55,7 +54,7 @@ class RegisterController extends Controller
                 'nombre' => $data['nombre'],
                 'email' => $data['email'],
                 'contraseña' => Hash::make($data['password']),
-                'rol' => $data['rol'],
+                'rol' => 'admin_cliente', // Asignar rol automáticamente
                 'fecha_creacion' => now(),
             ]);
     

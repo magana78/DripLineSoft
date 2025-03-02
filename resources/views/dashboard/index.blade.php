@@ -23,9 +23,7 @@
             </div>
         </div>
 
-        <a href="{{ route('historial.pagos') }}" class="btn btn-primary">
-            <i class="fas fa-receipt"></i> Ver Historial de Pagos
-        </a>
+    
         
 
         <!-- Aquí puedes agregar más tarjetas o widgets -->

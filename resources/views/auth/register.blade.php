@@ -29,14 +29,7 @@
             <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" required>
         </div>
 
-        <div class="mb-3">
-            <label for="rol" class="form-label">Rol</label>
-            <select id="rol" name="rol" class="form-control select2" required>
-                <option value="admin_sistema">Administrador del Sistema</option>
-                <option value="admin_cliente">Administrador del Cliente</option>
-                <option value="cliente_final">Cliente Final</option>
-            </select>
-        </div>
+        
 
         <!-- Información del Negocio -->
         <h4 class="text-primary mt-4 mb-3"><i class="fas fa-store icon"></i> Datos del Negocio</h4>

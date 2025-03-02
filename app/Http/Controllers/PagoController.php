@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class PagoController extends Controller
 {
     /**
-     * Mostrar el historial de pagos del usuario autenticado.
+     * Mostrar el historial de pagos del usuario autenticado y su negocio.
      */
     public function mostrarHistorial()
     {
@@ -21,12 +21,17 @@ class PagoController extends Controller
             return redirect()->back()->with('error', 'No se encontró información de pagos.');
         }
 
-        // Obtener todos los pagos del cliente autenticado
+        // Obtener todos los pagos del cliente autenticado y su negocio
         $pagos = DB::table('pagos_suscripcion')
-            ->where('id_cliente', $cliente->id_cliente)
+            ->join('clientes', 'pagos_suscripcion.id_cliente', '=', 'clientes.id_cliente')
+            ->select(
+                'pagos_suscripcion.*', 
+                'clientes.nombre_comercial'
+            )
+            ->where('clientes.id_cliente', $cliente->id_cliente)
             ->orderBy('fecha_pago', 'desc')
             ->get();
 
-        return view('dashboard.historial', compact('pagos')); // 🔹 Ajustamos la ruta de la vista
+        return view('dashboard.historial', compact('pagos'));
     }
 }
