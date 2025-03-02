@@ -1,44 +1,53 @@
-
 .transition-icon {
     transition: color 0.3s ease-in-out;
-    font-size: 24px; /* Ajusta el tamaño si lo necesitas */
+    font-size: 24px;
+    /* Ajusta el tamaño si lo necesitas */
 }
 
 
- /* Estilos generales para ambos botones */
- .action-btn {
+/* Estilos generales para ambos botones */
+.action-btn {
     width: 50px;
     height: 50px;
-    font-size: 1.5rem; /* Hace que los iconos sean más grandes */
+    font-size: 1.5rem;
+    /* Hace que los iconos sean más grandes */
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%; /* Hace que los botones sean circulares */
+    border-radius: 50%;
+    /* Hace que los botones sean circulares */
     transition: all 0.3s ease-in-out;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Efecto flotante */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    /* Efecto flotante */
 }
 
 /* 🎨 Botón de Edición */
 .edit-btn {
-    background-color: #ffc107; /* Amarillo */
+    background-color: #ffc107;
+    /* Amarillo */
     color: white;
 }
 
 .edit-btn:hover {
-    background-color: #e0a800; /* Amarillo más oscuro */
-    transform: translateY(-3px); /* Flotación en hover */
+    background-color: #e0a800;
+    /* Amarillo más oscuro */
+    transform: translateY(-3px);
+    /* Flotación en hover */
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* 🎨 Botón de Habilitar/Deshabilitar */
 .toggle-btn {
-    background-color: #343a40; /* Color oscuro */
+    background-color: #343a40;
+    /* Color oscuro */
     color: white;
 }
 
 .toggle-btn:hover {
-    background-color: #23272b; /* Oscuro más intenso */
-    transform: translateY(-3px); /* Flotación en hover */
+    background-color: #23272b;
+    /* Oscuro más intenso */
+    transform: translateY(-3px);
+    /* Flotación en hover */
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -49,25 +58,32 @@
 .action-btn-menus {
     width: 45px;
     height: 45px;
-    font-size: 1.4rem; /* Icono más grande */
+    font-size: 1.4rem;
+    /* Icono más grande */
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%; /* Circular */
+    border-radius: 50%;
+    /* Circular */
     transition: all 0.3s ease-in-out;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Sombra flotante */
-    border: none; /* Sin bordes */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    /* Sombra flotante */
+    border: none;
+    /* Sin bordes */
 }
 
 /* 🎨 Botón de Edición */
 .edit-btn-menus {
-    background-color: #ffc107; /* Amarillo */
+    background-color: #ffc107;
+    /* Amarillo */
     color: white;
 }
 
 .edit-btn-menus:hover {
-    background-color: #e0a800; /* Amarillo más oscuro */
-    transform: translateY(-3px); /* Flotación en hover */
+    background-color: #e0a800;
+    /* Amarillo más oscuro */
+    transform: translateY(-3px);
+    /* Flotación en hover */
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -76,12 +92,14 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    z-index: 10; /* Asegura que esté por encima del contenido */
+    z-index: 10;
+    /* Asegura que esté por encima del contenido */
 }
 
 .transition-effect {
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
+
 .hidden {
     opacity: 0;
     transform: scale(0.95);
@@ -92,7 +110,8 @@
 .image-container {
     width: 100%;
     max-width: 400px;
-    height: 300px; /* Mantener altura fija */
+    height: 300px;
+    /* Mantener altura fija */
     margin: auto;
     overflow: hidden;
     display: flex;
@@ -103,8 +122,33 @@
 .image-container img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 🔹 Recorta y ajusta la imagen sin distorsionarla */
-    border-radius: 10px; /* Opcional: bordes redondeados */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Opcional: sombra para un efecto estético */
+    object-fit: cover;
+    /* 🔹 Recorta y ajusta la imagen sin distorsionarla */
+    border-radius: 10px;
+    /* Opcional: bordes redondeados */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    /* Opcional: sombra para un efecto estético */
 }
 
+.new-product {
+    animation: highlight 2s ease-in-out 3;
+    border: 2px solid #28a745;
+    box-shadow: 0px 0px 15px rgba(40, 167, 69, 0.8);
+}
+
+.highlight {
+    animation: highlightEffect 1s ease-in-out 4;
+    border: 4px solid #ffcc00; /* Amarillo brillante */
+    box-shadow: 0px 0px 30px rgba(255, 204, 0, 1), 
+                0px 0px 50px rgba(255, 69, 0, 0.9), 
+                0px 0px 80px rgba(255, 0, 0, 0.8);
+    transition: all 0.5s ease-in-out;
+}
+
+@keyframes highlightEffect {
+    0% { box-shadow: 0px 0px 20px rgba(255, 204, 0, 1); }
+    25% { box-shadow: 0px 0px 40px rgba(255, 69, 0, 0.9); }
+    50% { box-shadow: 0px 0px 60px rgba(255, 0, 0, 0.8); }
+    75% { box-shadow: 0px 0px 40px rgba(255, 69, 0, 0.9); }
+    100% { box-shadow: 0px 0px 20px rgba(255, 204, 0, 1); }
+}

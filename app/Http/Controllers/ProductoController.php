@@ -80,7 +80,10 @@ class ProductoController extends Controller
         }
 
 
-        return redirect()->route('productos.index')->with('success', 'Producto creado exitosamente.');
+        return redirect()->route('productos.index')->with([
+            'success' => 'Producto agregado correctamente.',
+            'new_product_id' => $producto->id_producto // Guardamos el ID en la sesión
+        ]);
     }
 
     public function update(Request $request, $id)
