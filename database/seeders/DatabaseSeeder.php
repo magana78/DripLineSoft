@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,14 +11,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        
-        $this->call(MetodosPagoSeeder::class);
-        $this->call(UsuariosClientesSeeder::class);
-        $this->call(SucursalSeeder::class);
-
-
-
+        $this->call([
+            MetodosPagoSeeder::class,
+            UsuariosClientesSeeder::class,
+            SucursalSeeder::class,
+            ClienteUsuarioSeeder::class,      
+            DetallesPedidoTableSeeder::class, 
+            PedidosTableSeeder::class,
+            ProductosTableSeeder::class       
+        ]);
     }
-
-     // Llamar al seeder de métodos de pago
 }

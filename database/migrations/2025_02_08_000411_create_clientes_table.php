@@ -15,6 +15,7 @@ return new class extends Migration
             $table->integer('id_cliente', true);
             $table->integer('id_usuario')->index('id_usuario');
             $table->string('nombre_comercial');
+            $table->string('logo')->nullable(); 
             $table->text('direccion');
             $table->string('telefono', 20)->nullable();
             $table->string('email_contacto')->nullable()->unique('email_contacto');

@@ -18,15 +18,15 @@ class UsuariosClientesSeeder extends Seeder
             [
                 'nombre' => 'Bryan De La Torre',
                 'email' => 'b@gmail.com',
-                'contraseña' => Hash::make('12345678'), // Hashear la contraseña
-                'rol' => 'admin_cliente', // Valor válido según la migración
+                'contraseña' => Hash::make('12345678'),
+                'rol' => 'admin_cliente',
                 'fecha_creacion' => now(),
             ],
             [
                 'nombre' => 'Juan Pérez',
                 'email' => 'juan.perez@example.com',
-                'contraseña' => Hash::make('12345678'), // Hashear la contraseña
-                'rol' => 'admin_cliente', // Valor válido según la migración
+                'contraseña' => Hash::make('12345678'),
+                'rol' => 'admin_cliente',
                 'fecha_creacion' => now(),
             ],
             [
@@ -36,7 +36,73 @@ class UsuariosClientesSeeder extends Seeder
                 'rol' => 'cliente_final',
                 'fecha_creacion' => now(),
             ],
+            [
+                'nombre' => 'Carlos Fernández',
+                'email' => 'carlos.fernandez@example.com',
+                'contraseña' => Hash::make('87654321'),
+                'rol' => 'cliente_final',
+                'fecha_creacion' => now(),
+            ],
+            [
+                'nombre' => 'Laura González',
+                'email' => 'laura.gonzalez@example.com',
+                'contraseña' => Hash::make('87654321'),
+                'rol' => 'admin_cliente',
+                'fecha_creacion' => now(),
+            ],
+            [
+                'nombre' => 'Ana Martínez',
+                'email' => 'ana.martinez@example.com',
+                'contraseña' => Hash::make('password123'),
+                'rol' => 'cliente_final',
+                'fecha_creacion' => now(),
+            ],
+            [
+                'nombre' => 'Pedro Ramírez',
+                'email' => 'pedro.ramirez@example.com',
+                'contraseña' => Hash::make('password123'),
+                'rol' => 'admin_cliente',
+                'fecha_creacion' => now(),
+            ],
+            [
+                'nombre' => 'Marta Torres',
+                'email' => 'marta.torres@example.com',
+                'contraseña' => Hash::make('password123'),
+                'rol' => 'cliente_final',
+                'fecha_creacion' => now(),
+            ],
+            [
+                'nombre' => 'Diego Herrera',
+                'email' => 'diego.herrera@example.com',
+                'contraseña' => Hash::make('123123123'),
+                'rol' => 'cliente_final',
+                'fecha_creacion' => now(),
+            ],
+            [
+                'nombre' => 'Elena Cruz',
+                'email' => 'elena.cruz@example.com',
+                'contraseña' => Hash::make('123123123'),
+                'rol' => 'admin_cliente',
+                'fecha_creacion' => now(),
+            ],
+            [
+                'nombre' => 'Jorge Ortega',
+                'email' => 'jorge.ortega@example.com',
+                'contraseña' => Hash::make('password321'),
+                'rol' => 'cliente_final',
+                'fecha_creacion' => now(),
+            ],
+            [
+                'nombre' => 'Lucía Navarro',
+                'email' => 'lucia.navarro@example.com',
+                'contraseña' => Hash::make('password321'),
+                'rol' => 'cliente_final',
+                'fecha_creacion' => now(),
+            ],
         ];
+
+        // Sectores posibles
+        $sectores = ['cafetería', 'restaurante', 'otro'];
 
         foreach ($usuarios as $usuario) {
             $idUsuario = DB::table('usuarios')->insertGetId($usuario);
@@ -53,8 +119,10 @@ class UsuariosClientesSeeder extends Seeder
                 'fecha_registro' => now(),
                 'fecha_fin_suscripcion' => now()->addMonths(rand(1, 12)),
                 'estado_suscripcion' => 'pendiente',
-                'sector' => ['cafetería', 'restaurante', 'otro'][array_rand(['cafetería', 'restaurante', 'otro'])],
+                'sector' => $sectores[array_rand($sectores)],
             ]);
         }
+
+        $this->command->info('Seeder de Usuarios y Clientes completado correctamente con 12 registros.');
     }
 }
