@@ -69,7 +69,7 @@ class Cliente extends Model
 	public function metodos_pagos()
 	{
 		return $this->belongsToMany(MetodosPago::class, 'clientes_metodos_pago', 'id_cliente', 'id_metodo_pago')
-					->withPivot('id_cliente_metodo_pago');
+			->withPivot('id_cliente_metodo_pago');
 	}
 
 	public function pagos_suscripcions()
@@ -80,5 +80,11 @@ class Cliente extends Model
 	public function sucursales()
 	{
 		return $this->hasMany(Sucursale::class, 'id_cliente');
+	}
+
+	public function usuarios_asociados()
+	{
+		return $this->belongsToMany(Usuario::class, 'cliente_usuario', 'id_cliente', 'id_usuario')
+			->withTimestamps(); 
 	}
 }

@@ -47,17 +47,18 @@ class Usuario extends Authenticatable
 	];
 
 	// Ocultar el campo de contraseña al serializar el modelo
-    protected $hidden = [
-        'contraseña', 'remember_token',
-    ];
+	protected $hidden = [
+		'contraseña',
+		'remember_token',
+	];
 
 	/**
-     * Especificar que la contraseña está en la columna 'contraseña' en la base de datos.
-     */
-    public function getAuthPassword()
-    {
-        return $this->contraseña;
-    }
+	 * Especificar que la contraseña está en la columna 'contraseña' en la base de datos.
+	 */
+	public function getAuthPassword()
+	{
+		return $this->contraseña;
+	}
 
 	public function clientes()
 	{
@@ -69,10 +70,16 @@ class Usuario extends Authenticatable
 	{
 		return $this->hasOne(Cliente::class, 'id_usuario', 'id_usuario');
 	}
-	
+
 
 	public function pedidos()
 	{
 		return $this->hasMany(Pedido::class, 'id_usuario_cliente');
+	}
+
+	public function clientes_asociados()
+	{
+		return $this->belongsToMany(Cliente::class, 'cliente_usuario', 'id_usuario', 'id_cliente')
+			->withTimestamps();
 	}
 }
