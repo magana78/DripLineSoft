@@ -15,7 +15,7 @@ Route::prefix('mobile')->group(function () {
     Route::get('/sucursales/{id}/menus', [AndroidController::class, 'obtenerMenusPorSucursal']);
     Route::get('/menus/{id}/productos', [AndroidController::class, 'obtenerProductosPorMenu']);
     
-    Route::post('/crear-pedido', [AndroidController::class, 'crearPedido']);
+    Route::post('/crear-pedido' , [AndroidController::class, 'crearPedido']);
 
     Route::post('/productos/carrito/detalles', [AndroidController::class, 'obtenerDetallesProductosCarrito']);
 

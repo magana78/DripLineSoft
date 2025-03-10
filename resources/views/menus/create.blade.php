@@ -3,21 +3,21 @@
 @section('title', 'Crear Menú')
 
 @section('content_header')
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="text-primary">Crear Nuevo Menú</h2>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="text-primary">Crear Nuevo Menú</h2>
+</div>
 @endsection
 
 @section('content')
 <!-- Mensajes de error -->
 @if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
+<div class="alert alert-danger">
+    <ul>
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
 @endif
 
 <div class="card shadow-lg">
@@ -41,8 +41,22 @@
                     <option value="postres">Postres</option>
                     <option value="snacks">Snacks</option>
                     <option value="promociones">Promociones</option>
+                    <option value="ensaladas">Ensaladas</option>
+                    <option value="entradas">Entradas</option>
+                    <option value="platos fuertes">Platos Fuertes</option>
+                    <option value="comida rápida">Comida Rápida</option>
+                    <option value="carnes">Carnes</option>
+                    <option value="mariscos">Mariscos</option>
+                    <option value="sopas y caldos">Sopas y Caldos</option>
+                    <option value="comida mexicana">Comida Mexicana</option>
+                    <option value="comida italiana">Comida Italiana</option>
+                    <option value="comida oriental">Comida Oriental</option>
+                    <option value="vegetariano">Vegetariano</option>
+                    <option value="vegano">Vegano</option>
                 </select>
             </div>
+
+
 
             <!-- Seleccionar Sucursal -->
             <div class="form-group">
@@ -50,7 +64,7 @@
                 <select class="form-control" id="id_sucursal" name="id_sucursal" required>
                     <option value="" disabled selected>Selecciona una sucursal</option>
                     @foreach ($sucursales as $sucursal)
-                        <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->nombre_sucursal }}</option>
+                    <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->nombre_sucursal }}</option>
                     @endforeach
                 </select>
             </div>

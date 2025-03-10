@@ -59,7 +59,7 @@ class MenuController extends Controller
         // Validar los datos
         $request->validate([
             'nombre_menu' => 'required|string|max:255',
-            'categoria' => 'required|in:bebidas calientes,bebidas frías,postres,snacks,promociones',
+            'categoria' => 'required|in:bebidas calientes,bebidas frías,postres,snacks,promociones,ensaladas,entradas,platos fuertes,comida rápida,carnes,mariscos,sopas y caldos,comida mexicana,comida italiana,comida oriental,vegetariano,vegano',
             'id_sucursal' => 'required|exists:sucursales,id_sucursal',
         ]);
 
@@ -95,9 +95,10 @@ class MenuController extends Controller
         // Validar los datos
         $request->validate([
             'nombre_menu' => 'required|string|max:255',
-            'categoria' => 'required|in:bebidas calientes,bebidas frías,postres,snacks,promociones',
+            'categoria' => 'required|in:bebidas calientes,bebidas frías,postres,snacks,promociones,ensaladas,entradas,platos fuertes,comida rápida,carnes,mariscos,sopas y caldos,comida mexicana,comida italiana,comida oriental,vegetariano,vegano',
             'id_sucursal' => 'required|exists:sucursales,id_sucursal',
         ]);
+
 
         // Encontrar el menú y actualizarlo
         $menu = Menu::findOrFail($id);

@@ -15,7 +15,25 @@ return new class extends Migration
             $table->integer('id_menu', true);
             $table->integer('id_sucursal')->index('id_sucursal');
             $table->string('nombre_menu');
-            $table->enum('categoria', ['bebidas calientes', 'bebidas frías', 'postres', 'snacks', 'promociones']);
+            $table->enum('categoria', [
+                'bebidas calientes',
+                'bebidas frías',
+                'postres',
+                'snacks',
+                'promociones',
+                'ensaladas',
+                'entradas',
+                'platos fuertes',
+                'comida rápida',
+                'carnes',
+                'mariscos',
+                'sopas y caldos',
+                'comida mexicana',
+                'comida italiana',
+                'comida oriental',
+                'vegetariano',
+                'vegano'
+            ]);
         });
     }
 

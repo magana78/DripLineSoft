@@ -14,6 +14,8 @@ use App\Models\Pedido;
 use App\Models\Producto;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 
 
 
@@ -172,50 +174,59 @@ class AndroidController extends Controller
     {
         // Validar la información recibida
         $request->validate([
-            'id_sucursal' => 'required|integer',
             'id_usuario_cliente' => 'required|integer',
             'metodo_pago' => 'required|string',
             'productos' => 'required|array',
-            'productos.*.idProducto' => 'required|integer',
+            'productos.*.id_producto' => 'required|integer',  // Asegúrate que la clave es id_producto
             'productos.*.cantidad' => 'required|integer|min:1',
             'nota' => 'nullable|string',
             'descuento' => 'nullable|numeric|min:0'
         ]);
-
-        // Validar que los productos existan y estén disponibles
-        $productosIds = collect($request->productos)->pluck('idProducto');
-        $productosDisponibles = Producto::whereIn('id_producto', $productosIds)
-            ->where('disponible', true)
-            ->get();
-
-        if ($productosDisponibles->count() !== count($request->productos)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Uno o más productos no están disponibles o no existen.'
-            ], 400);
-        }
-
-        // Iniciar transacción para garantizar la consistencia de los datos
-        DB::beginTransaction();
-
+    
         try {
+            // Obtener los productos con sus detalles
+            $productosIds = collect($request->productos)->pluck('id_producto');  // Cambiar a id_producto
+            $productosDisponibles = Producto::whereIn('id_producto', $productosIds)
+                ->where('disponible', true)
+                ->get();
+    
+            if ($productosDisponibles->count() !== count($request->productos)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Uno o más productos no están disponibles o no existen.'
+                ], 400);
+            }
+    
+            // Determinar la sucursal a partir del primer producto
+            $idSucursal = $productosDisponibles->first()->menu->id_sucursal;
+    
+            // Verificar que todos los productos pertenezcan a la misma sucursal
+            if ($productosDisponibles->pluck('menu.id_sucursal')->unique()->count() > 1) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Todos los productos deben pertenecer a la misma sucursal.'
+                ], 400);
+            }
+    
+            // Iniciar transacción
+            DB::beginTransaction();
+    
             // Calcular el total del pedido
             $total = 0;
-
             foreach ($request->productos as $producto) {
-                $precio = $productosDisponibles->firstWhere('id_producto', $producto['idProducto'])->precio;
+                $precio = $productosDisponibles->firstWhere('id_producto', $producto['id_producto'])->precio;  // Cambiar a id_producto
                 $subtotal = $producto['cantidad'] * $precio;
                 $total += $subtotal;
             }
-
+    
             // Aplicar descuento si existe
             if ($request->has('descuento')) {
                 $total -= $request->descuento;
             }
-
-            // Crear el pedido
+    
+            // Crear el pedido con la sucursal determinada
             $pedido = Pedido::create([
-                'id_sucursal' => $request->id_sucursal,
+                'id_sucursal' => $idSucursal,
                 'id_usuario_cliente' => $request->id_usuario_cliente,
                 'fecha_pedido' => Carbon::now(),
                 'metodo_pago' => $request->metodo_pago,
@@ -225,22 +236,22 @@ class AndroidController extends Controller
                 'nota' => $request->nota,
                 'tiempo_entrega_estimado' => 30 // Tiempo estimado base
             ]);
-
+    
             // Registrar los detalles del pedido
             foreach ($request->productos as $producto) {
-                $precio = $productosDisponibles->firstWhere('id_producto', $producto['idProducto'])->precio;
+                $precio = $productosDisponibles->firstWhere('id_producto', $producto['id_producto'])->precio;  // Cambiar a id_producto
                 $subtotal = $producto['cantidad'] * $precio;
-
+    
                 DetallesPedido::create([
                     'id_pedido' => $pedido->id_pedido,
-                    'id_producto' => $producto['idProducto'],
+                    'id_producto' => $producto['id_producto'],  // Cambiar a id_producto
                     'cantidad' => $producto['cantidad'],
                     'subtotal' => $subtotal
                 ]);
             }
-
+    
             DB::commit();
-
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Pedido creado con éxito',
@@ -251,14 +262,25 @@ class AndroidController extends Controller
                 ]
             ], 201);
         } catch (\Exception $e) {
+            // Capturar cualquier excepción y registrar detalles adicionales
+            Log::error("Error al crear el pedido: " . $e->getMessage(), [
+                'request' => $request->all(),
+                'stack' => $e->getTraceAsString()
+            ]);
+    
             DB::rollBack();
-
+    
             return response()->json([
                 'success' => false,
-                'message' => 'Error al crear el pedido: ' . $e->getMessage()
+                'message' => 'Error al crear el pedido: ' . $e->getMessage(),
+                'error_details' => $e->getTraceAsString()  // Incluir detalles del error en la respuesta
             ], 500);
         }
     }
+    
+
+
+
 
     public function obtenerDetallesProductosCarrito(Request $request)
     {
@@ -266,18 +288,18 @@ class AndroidController extends Controller
             'productos' => 'required|array',
             'productos.*.idProducto' => 'required|integer'
         ]);
-    
+
         $productosIds = collect($request->productos)->pluck('idProducto');
-    
+
         $productos = Producto::whereIn('id_producto', $productosIds)->get();
-    
+
         if ($productos->isEmpty()) {
             return response()->json([
                 'success' => false,
                 'message' => 'No se encontraron productos'
             ], 404);
         }
-    
+
         // Estructura del nuevo objeto de respuesta
         return response()->json([
             'success' => true,
@@ -285,5 +307,4 @@ class AndroidController extends Controller
             'data' => $productos
         ], 200);
     }
-    
 }
