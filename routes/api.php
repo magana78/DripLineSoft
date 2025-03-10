@@ -6,6 +6,7 @@ use App\Http\Controllers\MovilPedidoController;
 use App\Http\Controllers\MovilSucursalController;
 use App\Http\Controllers\MovilClienteController;
 use App\Http\Controllers\MovilRestauranteController;
+use App\Http\Controllers\MovilMenuController;
 
 Route::prefix('movil')->group(function () {
     
@@ -23,7 +24,10 @@ Route::prefix('movil')->group(function () {
 
 
     // 📌 Rutas de sucursales
-    Route::get('/sucursales', [MovilSucursalController::class, 'listarSucursales'])->name('movil.sucursales.listar');
+    Route::get('/clientes/{idCliente}/sucursales', [MovilClienteController::class, 'listarSucursalesCliente'])
+    ->name('movil.clientes.sucursales');
+    Route::get('/sucursal/{idSucursal}/menus', [MovilSucursalController::class, 'listarMenusPorSucursal'])->name('movil.sucursal.menus');
+    Route::get('/menu/{idMenu}/productos', [MovilMenuController::class, 'listarProductosPorMenu'])->name('movil.menu.productos');
 
     // 📌 Rutas de clientes
     Route::post('/clientes', [MovilClienteController::class, 'registrar'])->name('movil.clientes.registrar');
@@ -34,5 +38,6 @@ Route::prefix('movil')->group(function () {
     // Rutas de restaurtantes
     Route::get('/restaurantes', [MovilRestauranteController::class, 'listarRestaurantes'])->name('movil.restaurantes.listar');
     Route::get('/restaurante/{id}', [MovilRestauranteController::class, 'obtenerRestaurante'])->name('movil.restaurante.obtener');
+    
 });
 
