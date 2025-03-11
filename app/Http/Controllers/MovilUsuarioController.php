@@ -17,7 +17,7 @@ class MovilUsuarioController extends Controller
             $request->validate([
                 'nombre' => 'required|string',
                 'email' => 'required|email|unique:usuarios',
-                'password' => 'required|min:6'
+                'password' => 'required|min:8'
             ]);
 
             // ✅ Crear usuario con contraseña encriptada
