@@ -150,23 +150,52 @@ class MovilPedidoController extends Controller
             ], 500);
         }
     }
-
-    // 📌 5️⃣ Historial de pedidos de un usuario
+    // 📌 5️⃣ Historial de pedidos de un usuario con detalles correctos
     public function historialPedidos($id_usuario)
     {
         try {
             $pedidos = Pedido::where('id_usuario_cliente', $id_usuario)
-                ->whereNotIn('estado', ['pendiente', 'en preparación'])
-                ->with('detalles_pedidos.producto')
+                ->with([
+                    'detalles_pedidos.producto',   
+                    'sucursale',                   
+                    'usuario.cliente'              
+                ])
                 ->get();
 
             if ($pedidos->isEmpty()) {
-                return response()->json(['exito' => false, 'mensaje' => 'No hay pedidos en el historial'], 404);
+                return response()->json([
+                    'exito' => false,
+                    'mensaje' => 'No hay pedidos en el historial'
+                ], 404);
             }
+
+            $pedidosFormateados = $pedidos->map(function ($pedido) {
+                return [
+                    'id_pedido' => $pedido->id_pedido,
+                    'nombre_comercial' => optional($pedido->usuario->cliente)->nombre_comercial ?? 'No disponible',
+                    'nombre_sucursal' => optional($pedido->sucursale)->nombre_sucursal ?? 'No disponible',
+                    'fecha_pedido' => $pedido->fecha_pedido->format('Y-m-d H:i:s'),
+                    'metodo_pago' => $pedido->metodo_pago,
+                    'estado' => $pedido->estado,
+                    'total' => $pedido->total,
+                    'descuento' => $pedido->descuento ?? 0,
+                    'nota' => $pedido->nota,
+                    'tiempo_entrega_estimado' => $pedido->tiempo_entrega_estimado,
+                    'detalles' => $pedido->detalles_pedidos->map(function ($detalle) {
+                        return [
+                            'id_detalle' => $detalle->id_detalle,
+                            'id_producto' => $detalle->id_producto,
+                            'nombre_producto' => optional($detalle->producto)->nombre_producto ?? 'No disponible',
+                            'cantidad' => $detalle->cantidad,
+                            'subtotal' => $detalle->subtotal,
+                        ];
+                    })
+                ];
+            });
 
             return response()->json([
                 'exito' => true,
-                'pedidos' => $pedidos
+                'pedidos' => $pedidosFormateados
             ]);
         } catch (\Exception $e) {
             return response()->json([

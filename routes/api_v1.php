@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Mobile\HelloController;
 use App\Http\Controllers\Mobile\AndroidController;
 use App\Http\Controllers\MovilUsuarioController;
+use App\Http\Controllers\MovilPedidoController;
 
 
 
@@ -22,6 +23,8 @@ Route::prefix('mobile')->group(function () {
     Route::post('/crear-pedido' , [AndroidController::class, 'crearPedido']);
 
     Route::post('/productos/carrito/detalles', [AndroidController::class, 'obtenerDetallesProductosCarrito']);
+    Route::get('/pedidos/historial/{id_usuario}', [MovilPedidoController::class, 'historialPedidos']);
+
 
 
 
