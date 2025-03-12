@@ -150,6 +150,8 @@ class MovilPedidoController extends Controller
             ], 500);
         }
     }
+
+
     // 📌 5️⃣ Historial de pedidos de un usuario con detalles correctos
     public function historialPedidos($id_usuario)
     {
@@ -157,8 +159,8 @@ class MovilPedidoController extends Controller
             $pedidos = Pedido::where('id_usuario_cliente', $id_usuario)
                 ->with([
                     'detalles_pedidos.producto',   
-                    'sucursale',                   
-                    'usuario.cliente'              
+                    'sucursale',
+                    'sucursale.cliente',                   
                 ])
                 ->get();
 
@@ -172,7 +174,7 @@ class MovilPedidoController extends Controller
             $pedidosFormateados = $pedidos->map(function ($pedido) {
                 return [
                     'id_pedido' => $pedido->id_pedido,
-                    'nombre_comercial' => optional($pedido->usuario->cliente)->nombre_comercial ?? 'No disponible',
+                    'nombre_comercial' => optional($pedido->sucursale->cliente)->nombre_comercial ?? 'No disponible', 
                     'nombre_sucursal' => optional($pedido->sucursale)->nombre_sucursal ?? 'No disponible',
                     'fecha_pedido' => $pedido->fecha_pedido->format('Y-m-d H:i:s'),
                     'metodo_pago' => $pedido->metodo_pago,

@@ -24,6 +24,8 @@ Route::prefix('mobile')->group(function () {
 
     Route::post('/productos/carrito/detalles', [AndroidController::class, 'obtenerDetallesProductosCarrito']);
     Route::get('/pedidos/historial/{id_usuario}', [MovilPedidoController::class, 'historialPedidos']);
+    
+    Route::post('/obtener-datos-pedido', [AndroidController::class, 'obtenerDatosPedido']);
 
 
 

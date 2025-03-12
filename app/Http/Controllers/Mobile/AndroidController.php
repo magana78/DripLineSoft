@@ -182,24 +182,24 @@ class AndroidController extends Controller
             'nota' => 'nullable|string',
             'descuento' => 'nullable|numeric|min:0'
         ]);
-    
+
         try {
             // Obtener los productos con sus detalles
             $productosIds = collect($request->productos)->pluck('id_producto');  // Cambiar a id_producto
             $productosDisponibles = Producto::whereIn('id_producto', $productosIds)
                 ->where('disponible', true)
                 ->get();
-    
+
             if ($productosDisponibles->count() !== count($request->productos)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Uno o más productos no están disponibles o no existen.'
                 ], 400);
             }
-    
+
             // Determinar la sucursal a partir del primer producto
             $idSucursal = $productosDisponibles->first()->menu->id_sucursal;
-    
+
             // Verificar que todos los productos pertenezcan a la misma sucursal
             if ($productosDisponibles->pluck('menu.id_sucursal')->unique()->count() > 1) {
                 return response()->json([
@@ -207,10 +207,10 @@ class AndroidController extends Controller
                     'message' => 'Todos los productos deben pertenecer a la misma sucursal.'
                 ], 400);
             }
-    
+
             // Iniciar transacción
             DB::beginTransaction();
-    
+
             // Calcular el total del pedido
             $total = 0;
             foreach ($request->productos as $producto) {
@@ -218,12 +218,12 @@ class AndroidController extends Controller
                 $subtotal = $producto['cantidad'] * $precio;
                 $total += $subtotal;
             }
-    
+
             // Aplicar descuento si existe
             if ($request->has('descuento')) {
                 $total -= $request->descuento;
             }
-    
+
             // Crear el pedido con la sucursal determinada
             $pedido = Pedido::create([
                 'id_sucursal' => $idSucursal,
@@ -236,12 +236,12 @@ class AndroidController extends Controller
                 'nota' => $request->nota,
                 'tiempo_entrega_estimado' => 30 // Tiempo estimado base
             ]);
-    
+
             // Registrar los detalles del pedido
             foreach ($request->productos as $producto) {
                 $precio = $productosDisponibles->firstWhere('id_producto', $producto['id_producto'])->precio;  // Cambiar a id_producto
                 $subtotal = $producto['cantidad'] * $precio;
-    
+
                 DetallesPedido::create([
                     'id_pedido' => $pedido->id_pedido,
                     'id_producto' => $producto['id_producto'],  // Cambiar a id_producto
@@ -249,9 +249,9 @@ class AndroidController extends Controller
                     'subtotal' => $subtotal
                 ]);
             }
-    
+
             DB::commit();
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Pedido creado con éxito',
@@ -267,9 +267,9 @@ class AndroidController extends Controller
                 'request' => $request->all(),
                 'stack' => $e->getTraceAsString()
             ]);
-    
+
             DB::rollBack();
-    
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error al crear el pedido: ' . $e->getMessage(),
@@ -277,7 +277,7 @@ class AndroidController extends Controller
             ], 500);
         }
     }
-    
+
 
 
 
@@ -306,5 +306,57 @@ class AndroidController extends Controller
             'message' => 'Detalles de productos encontrados',
             'data' => $productos
         ], 200);
+    }
+
+
+
+    public function obtenerDatosPedido(Request $request)
+    {
+        try {
+            // Validar el request
+            $request->validate([
+                'productos' => 'required|array',
+                'productos.*' => 'integer|exists:productos,id_producto'
+            ]);
+
+            // Obtener productos
+            $productos = Producto::with([
+                'menu.sucursale.cliente'
+            ])->whereIn('id_producto', $request->productos)->get();
+
+            // Si no hay productos encontrados
+            if ($productos->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se encontraron datos para los productos proporcionados.'
+                ], 404);
+            }
+
+            // Obtener datos del primer producto para obtener información del negocio
+            $primerProducto = $productos->first();
+
+            // Validar que las relaciones existan para evitar errores
+            $datosNegocio = [
+                'nombre_comercial' => $primerProducto->menu->sucursale->cliente->nombre_comercial ?? 'No disponible',
+                'nombre_sucursal' => $primerProducto->menu->sucursale->nombre_sucursal ?? 'No disponible',
+                'nombre_menu' => $primerProducto->menu->nombre_menu ?? 'No disponible',
+                'logo_cliente' => $primerProducto->menu->sucursale->cliente->logo ?? null,
+            ];
+
+
+            return response()->json([
+                'success' => true,
+                'datos_negocio' => $datosNegocio
+            ]);
+            
+        } catch (\Exception $e) {
+            // Manejar errores inesperados para siempre retornar un JSON
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error inesperado al obtener los datos del negocio.',
+                'error' => $e->getMessage()  // Para depuración, elimina esto en producción
+            ], 500);
+        }
     }
 }
