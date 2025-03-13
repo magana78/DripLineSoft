@@ -15,11 +15,7 @@ use App\Models\Producto;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-
-
-
-
-
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 
 class AndroidController extends Controller
@@ -52,6 +48,74 @@ class AndroidController extends Controller
             'message' => 'Autenticación exitosa',
             'data' => $usuario
         ]);
+    }
+
+    public function cambiarContrasena(Request $request)
+    {
+        Log::info("📩 Recibida solicitud de cambio de contraseña", $request->all());
+
+        // Validar datos de entrada
+        $validator = Validator::make($request->all(), [
+            'id_usuario' => 'required|exists:usuarios,id_usuario',
+            'contrasena_actual' => 'required|string',
+            'nueva_contrasena' => [
+                'required', 'string', 'min:8',
+                'regex:/[a-z]/',       // Al menos una letra minúscula
+                'regex:/[A-Z]/',       // Al menos una letra mayúscula
+                'regex:/[0-9]/',       // Al menos un número
+                'regex:/[@#\$%^&+=!]/' // Al menos un carácter especial
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            Log::error("❌ Error de validación", $validator->errors()->toArray());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        // Obtener usuario
+        $usuario = Usuario::find($request->id_usuario);
+
+        if (!$usuario) {
+            Log::error("⚠ Usuario con ID {$request->id_usuario} no encontrado.");
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no encontrado'
+            ], 404);
+        }
+
+        Log::info("👤 Usuario encontrado: {$usuario->nombre} (ID: {$usuario->id_usuario})");
+
+        // Verificar contraseña actual (como está en la columna 'contraseña')
+        if (!Hash::check($request->contrasena_actual, $usuario->getAuthPassword())) {
+            Log::warning("⚠ Contraseña incorrecta para el usuario ID: {$usuario->id_usuario}");
+            return response()->json([
+                'success' => false,
+                'message' => 'La contraseña actual no es correcta'
+            ], 401);
+        }
+
+        try {
+            // Actualizar contraseña
+            $usuario->contraseña = Hash::make($request->nueva_contrasena);
+            $usuario->save();
+
+            Log::info("✅ Contraseña cambiada correctamente para el usuario ID: {$usuario->id_usuario}");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Contraseña actualizada correctamente'
+            ]);
+        } catch (\Exception $e) {
+            Log::error("🚨 Error al actualizar la contraseña: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error interno del servidor'
+            ], 500);
+        }
     }
 
     public function obtenerClientesActivos(): JsonResponse
@@ -208,6 +272,32 @@ class AndroidController extends Controller
                 ], 400);
             }
 
+            // Obtener el cliente a partir de la sucursal
+            $cliente = Sucursale::where('id_sucursal', $idSucursal)->first()->cliente;
+
+            if (!$cliente) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se encontró el cliente asociado a la sucursal.'
+                ], 404);
+            }
+
+            // Insertar en la tabla cliente_usuario si no existe la asociación
+            $usuarioAsociado = DB::table('cliente_usuario')
+                ->where('id_cliente', $cliente->id_cliente)
+                ->where('id_usuario', $request->id_usuario_cliente)
+                ->exists();
+
+            if (!$usuarioAsociado) {
+                DB::table('cliente_usuario')->insert([
+                    'id_cliente' => $cliente->id_cliente,
+                    'id_usuario' => $request->id_usuario_cliente,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+
+
             // Iniciar transacción
             DB::beginTransaction();
 
@@ -278,10 +368,6 @@ class AndroidController extends Controller
         }
     }
 
-
-
-
-
     public function obtenerDetallesProductosCarrito(Request $request)
     {
         $request->validate([
@@ -307,8 +393,6 @@ class AndroidController extends Controller
             'data' => $productos
         ], 200);
     }
-
-
 
     public function obtenerDatosPedido(Request $request)
     {
@@ -348,7 +432,6 @@ class AndroidController extends Controller
                 'success' => true,
                 'datos_negocio' => $datosNegocio
             ]);
-            
         } catch (\Exception $e) {
             // Manejar errores inesperados para siempre retornar un JSON
 

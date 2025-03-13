@@ -26,6 +26,8 @@ Route::prefix('mobile')->group(function () {
     Route::get('/pedidos/historial/{id_usuario}', [MovilPedidoController::class, 'historialPedidos']);
     
     Route::post('/obtener-datos-pedido', [AndroidController::class, 'obtenerDatosPedido']);
+    
+    Route::post('/cambiar-contrasena', [AndroidController::class, 'cambiarContrasena']);
 
 
 
