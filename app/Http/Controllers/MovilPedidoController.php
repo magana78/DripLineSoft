@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Pedido;
 use App\Models\DetallesPedido;
 use App\Models\Producto;
+use App\Models\Cliente;
+
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -158,9 +160,9 @@ class MovilPedidoController extends Controller
         try {
             $pedidos = Pedido::where('id_usuario_cliente', $id_usuario)
                 ->with([
-                    'detalles_pedidos.producto',   
+                    'detalles_pedidos.producto',
                     'sucursale',
-                    'sucursale.cliente',                   
+                    'sucursale.cliente',
                 ])
                 ->get();
 
@@ -174,7 +176,7 @@ class MovilPedidoController extends Controller
             $pedidosFormateados = $pedidos->map(function ($pedido) {
                 return [
                     'id_pedido' => $pedido->id_pedido,
-                    'nombre_comercial' => optional($pedido->sucursale->cliente)->nombre_comercial ?? 'No disponible', 
+                    'nombre_comercial' => optional($pedido->sucursale->cliente)->nombre_comercial ?? 'No disponible',
                     'nombre_sucursal' => optional($pedido->sucursale)->nombre_sucursal ?? 'No disponible',
                     'fecha_pedido' => $pedido->fecha_pedido->format('Y-m-d H:i:s'),
                     'metodo_pago' => $pedido->metodo_pago,
@@ -207,4 +209,69 @@ class MovilPedidoController extends Controller
             ], 500);
         }
     }
+
+    public function historialPedidosNegocio($id_usuario)
+    {
+        try {
+            // Buscar el cliente asociado al usuario
+            $cliente = Cliente::where('id_usuario', $id_usuario)
+                ->with('sucursales.pedidos.detalles_pedidos.producto')
+                ->first();
+
+            // Si el cliente no existe, retornar error
+            if (!$cliente) {
+                return response()->json([
+                    'exito' => false,
+                    'mensaje' => 'No se encontró un negocio asociado a este usuario'
+                ], 404);
+            }
+
+            // Obtener los pedidos de todas las sucursales del negocio
+            $pedidos = collect();
+            foreach ($cliente->sucursales as $sucursal) {
+                foreach ($sucursal->pedidos as $pedido) {
+                    $pedidos->push([
+                        'id_pedido' => $pedido->id_pedido,
+                        'nombre_comercial' => $cliente->nombre_comercial,
+                        'nombre_sucursal' => $sucursal->nombre_sucursal,
+                        'fecha_pedido' => $pedido->fecha_pedido->format('Y-m-d H:i:s'),
+                        'metodo_pago' => $pedido->metodo_pago,
+                        'estado' => $pedido->estado,
+                        'total' => $pedido->total,
+                        'descuento' => $pedido->descuento ?? 0,
+                        'nota' => $pedido->nota,
+                        'tiempo_entrega_estimado' => $pedido->tiempo_entrega_estimado,
+                        'detalles' => $pedido->detalles_pedidos->map(function ($detalle) {
+                            return [
+                                'id_detalle' => $detalle->id_detalle,
+                                'id_producto' => $detalle->id_producto,
+                                'nombre_producto' => optional($detalle->producto)->nombre_producto ?? 'No disponible',
+                                'cantidad' => $detalle->cantidad,
+                                'subtotal' => $detalle->subtotal,
+                            ];
+                        })
+                    ]);
+                }
+            }
+
+            if ($pedidos->isEmpty()) {
+                return response()->json([
+                    'exito' => false,
+                    'mensaje' => 'No hay pedidos en el historial'
+                ], 404);
+            }
+
+            return response()->json([
+                'exito' => true,
+                'pedidos' => $pedidos
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'exito' => false,
+                'mensaje' => 'Error al obtener el historial de pedidos',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
 }

@@ -29,6 +29,11 @@ Route::prefix('mobile')->group(function () {
     
     Route::post('/cambiar-contrasena', [AndroidController::class, 'cambiarContrasena']);
 
+    Route::get('/clientes/{id_cliente}/usuarios', [AndroidController::class, 'getUsuariosAsociados']);
+
+    Route::get('/negocio/{id_usuario}/historial-pedidos', [MovilPedidoController::class, 'historialPedidosNegocio']);
+
+    Route::post('/sucursales/{id_sucursal}/toggle', [AndroidController::class, 'toggleEstadoSucursal']);
 
 
 

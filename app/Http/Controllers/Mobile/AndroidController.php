@@ -59,7 +59,9 @@ class AndroidController extends Controller
             'id_usuario' => 'required|exists:usuarios,id_usuario',
             'contrasena_actual' => 'required|string',
             'nueva_contrasena' => [
-                'required', 'string', 'min:8',
+                'required',
+                'string',
+                'min:8',
                 'regex:/[a-z]/',       // Al menos una letra minúscula
                 'regex:/[A-Z]/',       // Al menos una letra mayúscula
                 'regex:/[0-9]/',       // Al menos un número
@@ -441,5 +443,44 @@ class AndroidController extends Controller
                 'error' => $e->getMessage()  // Para depuración, elimina esto en producción
             ], 500);
         }
+    }
+
+    public function getUsuariosAsociados($id_cliente)
+    {
+        // Buscar el cliente por ID
+        $cliente = Cliente::with('usuarios_asociados')->find($id_cliente);
+
+        // Si no se encuentra el cliente, devolver error
+        if (!$cliente) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cliente no encontrado'
+            ], 404);
+        }
+
+        // Devolver la lista de usuarios asociados
+        return response()->json([
+            'success' => true,
+            'data' => $cliente->usuarios_asociados
+        ], 200);
+    }
+
+
+    public function toggleEstadoSucursal($id_sucursal)
+    {
+        $sucursal = Sucursale::find($id_sucursal);
+
+        if (!$sucursal) {
+            return response()->json(['exito' => false, 'mensaje' => 'Sucursal no encontrada'], 404);
+        }
+
+        $sucursal->activa = !$sucursal->activa;
+        $sucursal->save();
+
+        return response()->json([
+            'exito' => true,
+            'estado' => $sucursal->activa,
+            'mensaje' => 'Sucursal actualizada correctamente'
+        ]);
     }
 }
