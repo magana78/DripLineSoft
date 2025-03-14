@@ -35,6 +35,9 @@ Route::prefix('mobile')->group(function () {
 
     Route::post('/sucursales/{id_sucursal}/toggle', [AndroidController::class, 'toggleEstadoSucursal']);
 
+    Route::get('/estadisticas/cliente/{id_usuario}', [AndroidController::class, 'obtenerEstadisticasCliente']);
+    
+    Route::get('/estadisticas/pedidos/{id_usuario}', [AndroidController::class, 'obtenerCantidadPedidosUsuario']);
 
 
 });

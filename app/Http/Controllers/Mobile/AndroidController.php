@@ -483,4 +483,62 @@ class AndroidController extends Controller
             'mensaje' => 'Sucursal actualizada correctamente'
         ]);
     }
+
+     // 📌 Obtener cantidad de sucursales, menús y productos por cliente (negocio)
+     public function obtenerEstadisticasCliente($id_usuario)
+     {
+         try {
+             // Obtener el cliente relacionado al usuario
+             $cliente = Cliente::where('id_usuario', $id_usuario)->first();
+ 
+             if (!$cliente) {
+                 return response()->json([
+                     'exito' => false,
+                     'mensaje' => 'Cliente no encontrado'
+                 ], 404);
+             }
+ 
+             // Obtener cantidades
+             $cantidadSucursales = $cliente->sucursales()->count();
+             $cantidadMenus = $cliente->sucursales()->withCount('menus')->get()->sum('menus_count');
+             $cantidadProductos = $cliente->sucursales()->with('menus.productos')->get()->sum(function ($sucursal) {
+                 return $sucursal->menus->sum(function ($menu) {
+                     return $menu->productos->count();
+                 });
+             });
+ 
+             return response()->json([
+                 'exito' => true,
+                 'cantidadSucursales' => $cantidadSucursales,
+                 'cantidadMenus' => $cantidadMenus,
+                 'cantidadProductos' => $cantidadProductos
+             ]);
+         } catch (\Exception $e) {
+             return response()->json([
+                 'exito' => false,
+                 'mensaje' => 'Error al obtener estadísticas del cliente',
+                 'error' => $e->getMessage()
+             ], 500);
+         }
+     }
+ 
+     // 📌 Obtener cantidad de pedidos por usuario
+     public function obtenerCantidadPedidosUsuario($id_usuario)
+     {
+         try {
+             $cantidadPedidos = Pedido::where('id_usuario_cliente', $id_usuario)->count();
+ 
+             return response()->json([
+                 'exito' => true,
+                 'cantidadPedidos' => $cantidadPedidos
+             ]);
+         } catch (\Exception $e) {
+             return response()->json([
+                 'exito' => false,
+                 'mensaje' => 'Error al obtener la cantidad de pedidos',
+                 'error' => $e->getMessage()
+             ], 500);
+         }
+     }
+     
 }
