@@ -82,4 +82,10 @@ class Usuario extends Authenticatable
 		return $this->belongsToMany(Cliente::class, 'cliente_usuario', 'id_usuario', 'id_cliente')
 			->withTimestamps();
 	}
+
+	// Accesor para mostrar fecha en zona horaria correcta
+    public function getFechaCreacionAttribute($value)
+    {
+        return Carbon::parse($value)->setTimezone('America/Mexico_City')->toDateTimeString();
+    }
 }

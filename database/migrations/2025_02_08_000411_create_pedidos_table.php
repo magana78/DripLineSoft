@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('id_sucursal')->index('id_sucursal');
             $table->integer('id_usuario_cliente')->index('id_usuario_cliente');
             $table->dateTime('fecha_pedido');
+            $table->dateTime('fecha_entregado')->nullable()->comment('Fecha y hora en la que se entregó el pedido'); // ➡️ Campo agregado
             $table->enum('metodo_pago', ['efectivo', 'tarjeta', 'transferencia']);
             $table->enum('estado', ['pendiente', 'en preparación', 'listo', 'cancelado']);
             $table->decimal('total', 10);
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->integer('tiempo_entrega_estimado')->nullable()->comment('Tiempo estimado de entrega para este pedido (en minutos)');
         });
     }
+    
 
     /**
      * Reverse the migrations.
