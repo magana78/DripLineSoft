@@ -238,6 +238,9 @@ class MovilPedidoController extends Controller
                         'nombre_comercial' => $cliente->nombre_comercial,
                         'nombre_sucursal' => $sucursal->nombre_sucursal,
                         'fecha_pedido' => $pedido->fecha_pedido->format('Y-m-d H:i:s'),
+                        'fecha_entregado' => $pedido->fecha_entregado
+                        ? $pedido->fecha_entregado->format('Y-m-d H:i:s')
+                        : 'No entregado',
                         'metodo_pago' => $pedido->metodo_pago,
                         'estado' => $pedido->estado,
                         'total' => $pedido->total,
