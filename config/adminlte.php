@@ -320,6 +320,24 @@ return [
             ],
         ],
 
+
+        [
+            'text' => 'Historial de pagos',
+            'icon' => 'fas fa-wallet', // Icono más representativo para finanzas/pagos
+            'submenu' => [
+                [
+                    'text' => 'Historial de Pagos',
+                    'icon' => 'fas fa-file-invoice-dollar', // Icono ideal para historial de pagos
+                    'url' => '/dashboard/historial-pagos',
+                    'can' => 'access-payments-history',
+                ],
+            ],
+        ],
+        
+
+
+        
+
         // Sección de Sucursales con submenús
         [
             'text' => 'Sucursales',
@@ -346,6 +364,7 @@ return [
                 ],
             ],
         ],
+        
 
         // Sección de Menús
         [
@@ -360,6 +379,8 @@ return [
                 ],
             ],
         ],
+        
+        
 
         // Sección de Productos con submenús
         [
@@ -381,6 +402,21 @@ return [
                 ],
             ],
         ],
+
+        [
+            'text' => 'Pedidos',
+            'icon' => 'fas fa-shopping-cart',
+            'can' => 'manage-pedidos',
+            'submenu' => [
+                [
+                    'text' => 'Ver Todos',
+                    'icon' => 'fas fa-list',
+                    'url' => '/dashboard/pedidos',
+                    'can' => 'manage-pedidos',
+                ],
+            ],
+        ],
+        
 
         // Métodos de Pago
         [
@@ -410,7 +446,8 @@ return [
                 [
                     'text' => 'Cambiar Contraseña',
                     'icon' => 'fas fa-lock',
-                    'url' => 'admin/settings',
+                    'url' => '/cambiar-contrasena',
+                    'can' => 'auth',
                 ],
             ],
         ],
@@ -418,18 +455,20 @@ return [
         // Etiquetas informativas
         ['header' => 'labels'],
         [
-            'text' => 'Información',
+            'text' => 'Reportes',
             'icon' => 'fas fa-info-circle',
             'submenu' => [
                 [
-                    'text' => 'Importante',
-                    'icon_color' => 'red',
-                    'url' => '#',
+                    'text' => 'Reporte de Ventas',
+                    'icon' => 'fas fa-chart-bar',
+                    'url'  => 'reportes/ventas',
+                    'can'  => 'auth-reportes',
                 ],
                 [
-                    'text' => 'Advertencia',
-                    'icon_color' => 'yellow',
-                    'url' => '#',
+                    'text' => 'Reporte por Sucursal',
+                    'icon' => 'fas fa-store',
+                    'url'  => 'reportes/sucursales',
+                    'can'  => 'aut-sucursales',
                 ],
                 [
                     'text' => 'Información General',

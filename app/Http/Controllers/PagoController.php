@@ -14,24 +14,40 @@ class PagoController extends Controller
      */
     public function mostrarHistorial()
     {
-        // Obtener el cliente autenticado basado en su ID de usuario
+        // Obtener el cliente autenticado
         $cliente = Cliente::where('id_usuario', Auth::id())->first();
-
+    
         if (!$cliente) {
-            return redirect()->back()->with('error', 'No se encontró información de pagos.');
+            return redirect()->back()->with('error', 'No se encontró información de pagos ni renovaciones.');
         }
-
-        // Obtener todos los pagos del cliente autenticado y su negocio
+    
+        // Obtener todos los pagos del cliente autenticado
         $pagos = DB::table('pagos_suscripcion')
             ->join('clientes', 'pagos_suscripcion.id_cliente', '=', 'clientes.id_cliente')
             ->select(
-                'pagos_suscripcion.*', 
+                'pagos_suscripcion.*',
                 'clientes.nombre_comercial'
             )
             ->where('clientes.id_cliente', $cliente->id_cliente)
+            ->whereNot('pagos_suscripcion.referencia_pago', 'like', 'RENOV-%') // 🔥 Excluir renovaciones
             ->orderBy('fecha_pago', 'desc')
             ->get();
-
-        return view('dashboard.historial', compact('pagos'));
+    
+        // 🔥 Filtrar registros que tienen "RENOV-" en la referencia (identificaremos las renovaciones por este patrón)
+        $renovaciones = DB::table('pagos_suscripcion')
+            ->join('clientes', 'pagos_suscripcion.id_cliente', '=', 'clientes.id_cliente')
+            ->select(
+                'pagos_suscripcion.*',
+                'clientes.nombre_comercial'
+            )
+            ->where('clientes.id_cliente', $cliente->id_cliente)
+            ->where('pagos_suscripcion.referencia_pago', 'like', 'RENOV-%') // 🔥 Filtrar solo las renovaciones
+            ->orderBy('fecha_pago', 'desc')
+            ->get();
+    
+        return view('dashboard.historial', compact('pagos', 'renovaciones'));
     }
+    
+
+
 }

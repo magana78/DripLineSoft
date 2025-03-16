@@ -31,6 +31,24 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('manage-products', function (Usuario $user) {
             return $user->rol === 'admin_cliente'; // Solo admin_cliente puede ver menús
         });
+
+        Gate::define('manage-pedidos', function (Usuario $user) {
+            return $user->rol === 'admin_cliente'; // Solo admin_cliente puede ver menús
+        });
         
+        Gate::define('auth', function (Usuario $user) {
+            return $user->rol === 'admin_cliente'; // Solo admin_cliente puede ver menús
+        });
+
+        Gate::define('auth-reportes', function (Usuario $user) {
+            return $user->rol === 'admin_cliente'; // Solo admin_cliente puede ver menús
+        });
+
+        Gate::define('aut-sucursales', function (Usuario $user) {
+            return $user->rol === 'admin_cliente'; // Solo admin_cliente puede ver menús
+        });
+        Gate::define('access-payments-history', function (Usuario $user) {
+            return $user->rol === 'admin_cliente'; // Solo admin_cliente puede ver menús
+        });
     }
 }

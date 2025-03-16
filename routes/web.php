@@ -5,19 +5,28 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\PedidoController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\ProductoController;
-
-
-use App\Http\Controllers\RegistroController;
-use App\Http\Controllers\SucursalController;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Middleware\CheckSubscription;
+
+
+use App\Http\Controllers\LandingController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\RegistroController;
+use App\Http\Controllers\SucursalController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\ReporteSucursalController;
+use App\Http\Controllers\Auth\ChangePasswordController;
+
 
 Route::get('/', function () {
     return redirect('/login');
 });
+
+Route::get('/landing', [LandingController::class, 'index'])->name('landing');
+
 
 Route::post('/logout', function () {
     Auth::logout();
@@ -26,9 +35,9 @@ Route::post('/logout', function () {
     return redirect('/login');
 })->name('logout');
 
-Route::get('/dashboard', function () {
-    return view('dashboard.index');
-})->name('dashboard');
+
+
+
 
 Route::post('/registro', [RegisterController::class, 'register']);
 
@@ -38,7 +47,12 @@ Route::post('/paypal/capture-order', [PayPalController::class, 'captureOrder']);
 
 
 // ✅ Agrupar todas las rutas del "admin_cliente" con middleware de autenticación y rol
-Route::middleware(['auth', 'role:admin_cliente', CheckSubscription::class])->group(function () {
+Route::middleware(['auth',  'role:admin_cliente', CheckSubscription::class])->group(function () {
+    
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/cambiar-contrasena', [ChangePasswordController::class, 'showChangePasswordForm'])->name('password.change');
+    Route::post('/cambiar-contrasena', [ChangePasswordController::class, 'changePassword'])->name('password.change.update');
     
 
 
@@ -78,7 +92,11 @@ Route::middleware(['auth', 'role:admin_cliente', CheckSubscription::class])->gro
     Route::post('/productos/{id}/toggle', [ProductoController::class, 'toggleEstado'])->name('productos.toggle');
     Route::resource('productos', ProductoController::class);
 
+    Route::get('/reportes/ventas', [ReporteController::class, 'index'])->name('reportes.ventas');
+    Route::get('/reportes/ventas/pdf', [ReporteController::class, 'exportarPDF'])->name('reportes.ventas.pdf');
 
+    Route::get('/reportes/sucursales', [ReporteSucursalController::class, 'index'])->name('reportes.sucursales');
+    Route::post('/reportes/sucursales/pdf', [ReporteSucursalController::class, 'exportarPDF'])->name('reportes.sucursales.pdf');
 
 });
 
@@ -86,6 +104,7 @@ Route::middleware(['auth', 'role:admin_cliente', CheckSubscription::class])->gro
 
 
 Route::post('/perfil/renovar', [PerfilController::class, 'renovar'])->name('perfil.renovar');
+
 
 
 
