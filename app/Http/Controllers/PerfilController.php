@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Cliente;
 use App\Models\Usuario;
+use Illuminate\Support\Facades\DB;
 
 class PerfilController extends Controller
 {
@@ -98,22 +99,47 @@ class PerfilController extends Controller
             return response()->json(['success' => false, 'message' => 'Cliente no encontrado'], 404);
         }
     
-        // Verificar estado actual
+        // Verificar estado actual de la suscripción
         if (trim($cliente->estado_suscripcion) !== 'pendiente' && trim($cliente->estado_suscripcion) !== 'cancelado') {
             return response()->json([
                 'success' => false,
-                'message' => 'No puedes renovar una suscripción activa'
+                'message' => 'No puedes renovar una suscripción activa.'
             ]);
         }
     
-        // 🔥 Actualizar en la base de datos
-        $cliente->update(['estado_suscripcion' => 'activa']);
+        // Fecha de inicio y fin de suscripción
+        $fechaInicio = now();
+        $fechaFin = now()->addMonth();
+    
+        // Generar un ID único para la orden (si aún no tienes uno)
+        $orderID = 'RENOV-' . uniqid();
+    
+        // 🔥 Registrar el pago en la tabla de pagos como una renovación
+        DB::table('pagos_suscripcion')->insert([
+            'id_cliente' => $cliente->id_cliente,
+            'fecha_pago' => now(),
+            'plan_suscripcion' => $cliente->plan_suscripcion, // Utiliza el plan del cliente
+            'monto_pagado' => 300.00,  // Mismo monto que el primer pago
+            'metodo_pago' => 'tarjeta', // Método de pago fijo (puedes cambiarlo según tu lógica)
+            'referencia_pago' => $orderID,
+            'estado_pago' => 'completado',
+            'fecha_inicio_suscripcion' => $fechaInicio,
+            'fecha_fin_suscripcion' => $fechaFin,
+           
+        ]);
+    
+        // 🔥 Actualizar el estado de la suscripción en el cliente
+        $cliente->update([
+            'estado_suscripcion' => 'activa',
+            'fecha_fin_suscripcion' => $fechaFin
+        ]);
     
         return response()->json([
             'success' => true,
-            'message' => 'Tu suscripción ha sido activada correctamente.'
+            'message' => 'Tu suscripción ha sido renovada correctamente.'
         ]);
     }
+    
     
     
 }

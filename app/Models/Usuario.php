@@ -30,6 +30,9 @@ use Illuminate\Notifications\Notifiable;
  */
 class Usuario extends Authenticatable
 {
+
+	use Notifiable; // ✔️ Agrega este trait para manejar notificaciones y más
+	
 	protected $table = 'usuarios';
 	protected $primaryKey = 'id_usuario';
 	public $timestamps = false;

@@ -201,7 +201,7 @@
                                             icon: 'success',
                                             title: 'Pago Completado',
                                             text: 'Tu suscripción ha sido activada.',
-                                            confirmButtonText: 'Ir al Dashboard'
+                                            confirmButtonText: 'Ir al Inicio de Sesión'
                                         }).then(() => {
                                             window.location.href = "/dashboard";
                                         });
