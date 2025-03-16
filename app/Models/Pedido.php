@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id_sucursal
  * @property int $id_usuario_cliente
  * @property Carbon $fecha_pedido
+ * @property Carbon|null $fecha_entregado
  * @property string $metodo_pago
  * @property string $estado
  * @property float $total
@@ -32,43 +33,45 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Pedido extends Model
 {
-	protected $table = 'pedidos';
-	protected $primaryKey = 'id_pedido';
-	public $timestamps = false;
+    protected $table = 'pedidos';
+    protected $primaryKey = 'id_pedido';
+    public $timestamps = false;
 
-	protected $casts = [
-		'id_sucursal' => 'int',
-		'id_usuario_cliente' => 'int',
-		'fecha_pedido' => 'datetime',
-		'total' => 'float',
-		'descuento' => 'float',
-		'tiempo_entrega_estimado' => 'int'
-	];
+    protected $casts = [
+        'id_sucursal' => 'int',
+        'id_usuario_cliente' => 'int',
+        'fecha_pedido' => 'datetime',
+        'fecha_entregado' => 'datetime', // ➡️ Campo agregado para formatear correctamente la fecha de entrega
+        'total' => 'float',
+        'descuento' => 'float',
+        'tiempo_entrega_estimado' => 'int'
+    ];
 
-	protected $fillable = [
-		'id_sucursal',
-		'id_usuario_cliente',
-		'fecha_pedido',
-		'metodo_pago',
-		'estado',
-		'total',
-		'descuento',
-		'nota',
-		'tiempo_entrega_estimado'
-	];
+    protected $fillable = [
+        'id_sucursal',
+        'id_usuario_cliente',
+        'fecha_pedido',
+        'fecha_entregado', // ➡️ Campo agregado para poder rellenar este valor al crear registros
+        'metodo_pago',
+        'estado',
+        'total',
+        'descuento',
+        'nota',
+        'tiempo_entrega_estimado'
+    ];
 
-	public function sucursale()
-	{
-		return $this->belongsTo(Sucursale::class, 'id_sucursal');
-	}
+    public function sucursale()
+    {
+        return $this->belongsTo(Sucursale::class, 'id_sucursal');
+    }
 
-	public function usuario()
-	{
-		return $this->belongsTo(Usuario::class, 'id_usuario_cliente');
-	}
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'id_usuario_cliente');
+    }
 
-	public function detalles_pedidos()
-	{
-		return $this->hasMany(DetallesPedido::class, 'id_pedido');
-	}
+    public function detalles_pedidos()
+    {
+        return $this->hasMany(DetallesPedido::class, 'id_pedido');
+    }
 }

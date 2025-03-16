@@ -179,6 +179,9 @@ class MovilPedidoController extends Controller
                     'nombre_comercial' => optional($pedido->sucursale->cliente)->nombre_comercial ?? 'No disponible',
                     'nombre_sucursal' => optional($pedido->sucursale)->nombre_sucursal ?? 'No disponible',
                     'fecha_pedido' => $pedido->fecha_pedido->format('Y-m-d H:i:s'),
+                    'fecha_entregado' => $pedido->fecha_entregado
+                        ? $pedido->fecha_entregado->format('Y-m-d H:i:s')
+                        : 'No entregado',
                     'metodo_pago' => $pedido->metodo_pago,
                     'estado' => $pedido->estado,
                     'total' => $pedido->total,
@@ -273,5 +276,4 @@ class MovilPedidoController extends Controller
             ], 500);
         }
     }
-    
 }
