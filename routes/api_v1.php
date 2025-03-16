@@ -38,6 +38,7 @@ Route::prefix('mobile')->group(function () {
     Route::get('/estadisticas/cliente/{id_usuario}', [AndroidController::class, 'obtenerEstadisticasCliente']);
     
     Route::get('/estadisticas/pedidos/{id_usuario}', [AndroidController::class, 'obtenerCantidadPedidosUsuario']);
+    Route::put('/pedido/cancelar/{id}', [MovilPedidoController::class, 'cancelarPedido']);
 
 
 });

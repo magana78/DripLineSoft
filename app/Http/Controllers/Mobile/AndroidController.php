@@ -133,7 +133,7 @@ class AndroidController extends Controller
             'estado_suscripcion'
         )
             ->where('estado_suscripcion', 'activa')
-            ->whereIn('sector', ['cafetería', 'restaurante'])
+            ->whereIn('sector', ['cafetería', 'restaurante','otro'])
             ->get();
 
         // Verificar si se encontraron clientes
