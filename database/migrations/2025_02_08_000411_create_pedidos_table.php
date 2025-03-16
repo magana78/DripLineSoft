@@ -18,7 +18,7 @@ return new class extends Migration
             $table->dateTime('fecha_pedido');
             $table->dateTime('fecha_entregado')->nullable()->comment('Fecha y hora en la que se entregó el pedido'); // ➡️ Campo agregado
             $table->enum('metodo_pago', ['efectivo', 'tarjeta', 'transferencia']);
-            $table->enum('estado', ['pendiente', 'en preparación', 'listo', 'cancelado']);
+            $table->enum('estado', ['pendiente', 'en preparación', 'listo', 'cancelado','entregado']);
             $table->decimal('total', 10);
             $table->decimal('descuento', 10)->nullable()->default(0);
             $table->text('nota')->nullable();
