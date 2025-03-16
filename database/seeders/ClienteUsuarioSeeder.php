@@ -12,21 +12,34 @@ class ClienteUsuarioSeeder extends Seeder
      */
     public function run(): void
     {
-        // Datos ficticios para poblar la tabla
-        $clienteUsuarios = [
-            ['id_cliente' => 1, 'id_usuario' => 2],
-            ['id_cliente' => 1, 'id_usuario' => 3],
-            ['id_cliente' => 2, 'id_usuario' => 4],
-            ['id_cliente' => 2, 'id_usuario' => 5],
-            ['id_cliente' => 3, 'id_usuario' => 6],
-        ];
+        // Obtener los IDs de clientes existentes en la tabla 'clientes'
+        $clientes = DB::table('clientes')->pluck('id_cliente');
 
-        // Insertar datos en la tabla pivote
-        foreach ($clienteUsuarios as $entry) {
-            DB::table('cliente_usuario')->insert($entry);
+        // Obtener los IDs de usuarios con el rol 'cliente_final'
+        $usuariosClientes = DB::table('usuarios')
+            ->where('rol', 'cliente_final')
+            ->pluck('id_usuario');
+
+        // Verificar que existan datos en ambas tablas
+        if ($clientes->isEmpty() || $usuariosClientes->isEmpty()) {
+            $this->command->warn('⚠️ No se encontraron clientes o usuarios con el rol "cliente_final".');
+            return;
         }
 
-        // Mensaje de confirmación en consola
-        $this->command->info('Seeder de ClienteUsuario completado correctamente.');
+        // Crear combinaciones donde cada cliente_final se asigne a cada admin_cliente
+        $clienteUsuarios = [];
+        foreach ($clientes as $cliente) {
+            foreach ($usuariosClientes as $usuario) {
+                $clienteUsuarios[] = [
+                    'id_cliente' => $cliente,
+                    'id_usuario' => $usuario
+                ];
+            }
+        }
+
+        // Insertar datos en la tabla pivote
+        DB::table('cliente_usuario')->insert($clienteUsuarios);
+
+        $this->command->info('✅ Seeder de ClienteUsuario completado correctamente. Se asignaron todos los clientes_final a todos los admin_cliente.');
     }
 }

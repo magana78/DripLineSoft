@@ -101,28 +101,29 @@ class UsuariosClientesSeeder extends Seeder
             ],
         ];
 
-        // Sectores posibles
         $sectores = ['cafetería', 'restaurante', 'otro'];
 
         foreach ($usuarios as $usuario) {
             $idUsuario = DB::table('usuarios')->insertGetId($usuario);
 
-            // Insertar clientes asociados al usuario creado
-            DB::table('clientes')->insert([
-                'id_usuario' => $idUsuario,
-                'nombre_comercial' => 'Comercial ' . $usuario['nombre'],
-                'direccion' => 'Dirección ficticia ' . rand(1, 100),
-                'telefono' => '555-' . rand(1000, 9999),
-                'email_contacto' => strtolower('contacto.' . $usuario['email']),
-                'plan_suscripcion' => rand(0, 1) ? 'mensual' : 'anual',
-                'monto_suscripcion' => rand(500, 5000),
-                'fecha_registro' => now(),
-                'fecha_fin_suscripcion' => now()->addMonths(rand(1, 12)),
-                'estado_suscripcion' => 'pendiente',
-                'sector' => $sectores[array_rand($sectores)],
-            ]);
+            // Insertar solo los usuarios con el rol 'admin_cliente' en la tabla 'clientes'
+            if ($usuario['rol'] === 'admin_cliente') {
+                DB::table('clientes')->insert([
+                    'id_usuario' => $idUsuario,
+                    'nombre_comercial' => 'Comercial ' . $usuario['nombre'],
+                    'direccion' => 'Dirección ficticia ' . rand(1, 100),
+                    'telefono' => '555-' . rand(1000, 9999),
+                    'email_contacto' => strtolower('contacto.' . $usuario['email']),
+                    'plan_suscripcion' => rand(0, 1) ? 'mensual' : 'anual',
+                    'monto_suscripcion' => rand(500, 5000),
+                    'fecha_registro' => now(),
+                    'fecha_fin_suscripcion' => now()->addMonths(rand(1, 12)),
+                    'estado_suscripcion' => 'activa',
+                    'sector' => $sectores[array_rand($sectores)],
+                ]);
+            }
         }
 
-        $this->command->info('Seeder de Usuarios y Clientes completado correctamente con 12 registros.');
+        $this->command->info('✅ Seeder de Usuarios y Clientes completado correctamente. Se insertaron solo los admin_cliente en la tabla de clientes.');
     }
 }

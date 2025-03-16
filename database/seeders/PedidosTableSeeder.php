@@ -13,12 +13,12 @@ class PedidosTableSeeder extends Seeder
      */
     public function run()
     {
-        // Verifica si hay al menos un usuario y una sucursal en la base de datos
-        $usuario = DB::table('usuarios')->first();
+        // Verifica si hay al menos un usuario con el rol "cliente_final" y una sucursal en la base de datos
+        $usuario = DB::table('usuarios')->where('rol', 'cliente_final')->first();
         $sucursal = DB::table('sucursales')->first();
 
         if (!$usuario || !$sucursal) {
-            echo "⚠️ No se encontraron usuarios o sucursales. Agrega datos primero.\n";
+            echo "⚠️ No se encontraron usuarios con el rol 'cliente_final' o sucursales. Agrega datos primero.\n";
             return;
         }
 
@@ -33,16 +33,17 @@ class PedidosTableSeeder extends Seeder
             DB::table('pedidos')->insert([
                 'id_sucursal' => $sucursal->id_sucursal,
                 'id_usuario_cliente' => $usuario->id_usuario,
-                'fecha_pedido' => Carbon::now()->subMinutes(rand(10, 500)), // Fechas recientes aleatorias
+                'fecha_pedido' => Carbon::now()->subMinutes(rand(10, 500)),
+                'fecha_entregado' => (rand(0, 1)) ? Carbon::now() : null, // Agregar fecha de entrega aleatoria
                 'metodo_pago' => $metodos_pago[array_rand($metodos_pago)],
-                'estado' => $estados[array_rand($estados)], // Se selecciona un estado válido
+                'estado' => $estados[array_rand($estados)],
                 'total' => rand(100, 500),
                 'descuento' => rand(5, 50),
                 'nota' => 'Pedido de prueba ' . $i,
-                'tiempo_entrega_estimado' => rand(15, 60), // Tiempo entre 15 y 60 minutos
+                'tiempo_entrega_estimado' => rand(15, 60),
             ]);
         }
 
-        echo "✅ Se insertaron 5 pedidos correctamente.\n";
+        echo "✅ Se insertaron 5 pedidos correctamente para usuarios con el rol 'cliente_final'.\n";
     }
 }
