@@ -101,16 +101,22 @@ class UsuariosClientesSeeder extends Seeder
             ],
         ];
 
-        $sectores = ['cafetería', 'restaurante', 'otro'];
+        $sectores = ['cafetería', 'restaurante'];
+
+        $nombres_comerciales = [
+            'cafetería' => ['Café La Parroquia', 'Café de Tacuba', 'Café Punta del Cielo', 'Café El Jarocho', 'Café La Flor de Córdoba'],
+            'restaurante' => ['La Casa de Toño', 'Tacos El Califa', 'El Fogón de la Abuela', 'La Vaca Argentina', 'El Cardenal'],
+        ];
 
         foreach ($usuarios as $usuario) {
             $idUsuario = DB::table('usuarios')->insertGetId($usuario);
 
             // Insertar solo los usuarios con el rol 'admin_cliente' en la tabla 'clientes'
             if ($usuario['rol'] === 'admin_cliente') {
+                $sector = $sectores[array_rand($sectores)];
                 DB::table('clientes')->insert([
                     'id_usuario' => $idUsuario,
-                    'nombre_comercial' => 'Comercial ' . $usuario['nombre'],
+                    'nombre_comercial' => $nombres_comerciales[$sector][array_rand($nombres_comerciales[$sector])],
                     'direccion' => 'Dirección ficticia ' . rand(1, 100),
                     'telefono' => '555-' . rand(1000, 9999),
                     'email_contacto' => strtolower('contacto.' . $usuario['email']),
@@ -119,7 +125,7 @@ class UsuariosClientesSeeder extends Seeder
                     'fecha_registro' => now(),
                     'fecha_fin_suscripcion' => now()->addMonths(rand(1, 12)),
                     'estado_suscripcion' => 'activa',
-                    'sector' => $sectores[array_rand($sectores)],
+                    'sector' => $sector,
                 ]);
             }
         }
