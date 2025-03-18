@@ -58,7 +58,8 @@ class Cliente extends Model
 		'fecha_registro',
 		'fecha_fin_suscripcion',
 		'estado_suscripcion',
-		'sector'
+		'sector',
+		'logo'  // 🔹 Asegúrate que este campo esté en el array $fillable
 	];
 
 	public function usuario()

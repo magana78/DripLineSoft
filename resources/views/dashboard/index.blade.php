@@ -8,6 +8,26 @@
 <div class="card shadow-sm border-0 bg-light mb-4">
     <div class="card-body text-center">
         <div class="d-flex flex-column align-items-center">
+
+            <!-- Logo del Negocio -->
+            @if($logo)
+                @php
+                    $rutaLogo = asset('storage/' . $logo);
+                @endphp
+
+                <div class="mb-3">
+                    <img src="{{ asset('storage/' . $logo) }}" 
+                    alt="Logo del Negocio" 
+                    class="rounded-circle shadow-sm" 
+                    width="100" height="100">
+               
+                </div>
+            @else
+                <div class="mb-3">
+                    <p class="text-muted">Sin logo</p>
+                </div>
+            @endif
+
             <h4 class="fw-bold text-primary">
                 <i class="fas fa-store text-primary me-2"></i>
                 {{ $nombre_negocio }}
@@ -19,6 +39,8 @@
         </div>
     </div>
 </div>
+
+
 
     <h1>Bienvenido al Panel de Administración</h1>
 @stop
