@@ -23,20 +23,27 @@ class PedidosTableSeeder extends Seeder
         }
 
         // Lista de estados válidos (según el ENUM de la base de datos)
-        $estados = ['pendiente', 'en preparación', 'listo', 'cancelado'];
+        $estados = ['pendiente', 'en preparación', 'listo', 'cancelado', 'entregado'];
 
         // Métodos de pago disponibles según el ENUM
         $metodos_pago = ['efectivo', 'tarjeta', 'transferencia'];
 
-        // Insertar 5 pedidos con datos aleatorios
-        for ($i = 1; $i <= 5; $i++) {
+        // Generar entre 10 y 15 pedidos aleatorios
+        $totalPedidos = rand(10, 15);
+
+        // Insertar pedidos con datos aleatorios
+        for ($i = 1; $i <= $totalPedidos; $i++) {
+            $estadoSeleccionado = $estados[array_rand($estados)];
+
             DB::table('pedidos')->insert([
                 'id_sucursal' => $sucursal->id_sucursal,
                 'id_usuario_cliente' => $usuario->id_usuario,
                 'fecha_pedido' => Carbon::now()->subMinutes(rand(10, 500)),
-                'fecha_entregado' => (rand(0, 1)) ? Carbon::now() : null, // Agregar fecha de entrega aleatoria
+                'fecha_entregado' => ($estadoSeleccionado === 'entregado') 
+                                    ? Carbon::now()->subMinutes(rand(1, 120)) 
+                                    : null, // Solo si el estado es 'entregado'
                 'metodo_pago' => $metodos_pago[array_rand($metodos_pago)],
-                'estado' => $estados[array_rand($estados)],
+                'estado' => $estadoSeleccionado,
                 'total' => rand(100, 500),
                 'descuento' => rand(5, 50),
                 'nota' => 'Pedido de prueba ' . $i,
@@ -44,6 +51,6 @@ class PedidosTableSeeder extends Seeder
             ]);
         }
 
-        echo "✅ Se insertaron 5 pedidos correctamente para usuarios con el rol 'cliente_final'.\n";
+        echo "✅ Se insertaron $totalPedidos pedidos correctamente para usuarios con el rol 'cliente_final'.\n";
     }
 }

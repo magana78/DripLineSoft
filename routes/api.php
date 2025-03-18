@@ -1,43 +1,40 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MovilUsuarioController;
-use App\Http\Controllers\MovilPedidoController;
-use App\Http\Controllers\MovilSucursalController;
-use App\Http\Controllers\MovilClienteController;
-use App\Http\Controllers\MovilRestauranteController;
-use App\Http\Controllers\MovilMenuController;
+use App\Http\Controllers\Mobile\AndroidController;
 
-Route::prefix('movil')->group(function () {
+
+
+
+Route::prefix('mobile')->group(function () {
+    Route::post('/registro', [AndroidController::class, 'registrar'])->name('movil.registro');
+
+    Route::post('/login', [AndroidController::class, 'login']);
+    Route::get('/clientes-activos', [AndroidController::class, 'obtenerClientesActivos']);
+    Route::get('/clientes/{id}/sucursales', [AndroidController::class, 'obtenerSucursalesPorCliente']);
+
+    Route::get('/sucursales/{id}/menus', [AndroidController::class, 'obtenerMenusPorSucursal']);
+    Route::get('/menus/{id}/productos', [AndroidController::class, 'obtenerProductosPorMenu']);
     
-    // 📌 Rutas de usuario
-    Route::post('/registro', [MovilUsuarioController::class, 'registrar'])->name('movil.registro');
-    Route::post('/login', [MovilUsuarioController::class, 'login'])->name('movil.login');
-    Route::get('/usuario/{id}', [MovilUsuarioController::class, 'obtenerUsuario'])->name('movil.usuario.obtener');
+    Route::post('/crear-pedido' , [AndroidController::class, 'crearPedido']);
 
-    // 📌 Rutas de pedidos
-    Route::post('/pedido', [MovilPedidoController::class, 'crearPedido']);
-    Route::get('/pedido/{id}', [MovilPedidoController::class, 'obtenerPedido']);
-    Route::get('/pedidos/activos/{id_usuario}', [MovilPedidoController::class, 'listarPedidosActivos']);
-    Route::put('/pedido/cancelar/{id}', [MovilPedidoController::class, 'cancelarPedido']);
-    Route::get('/pedidos/historial/{id_usuario}', [MovilPedidoController::class, 'historialPedidos']);
-
-
-    // 📌 Rutas de sucursales
-    Route::get('/clientes/{idCliente}/sucursales', [MovilClienteController::class, 'listarSucursalesCliente'])
-    ->name('movil.clientes.sucursales');
-    Route::get('/sucursal/{idSucursal}/menus', [MovilSucursalController::class, 'listarMenusPorSucursal'])->name('movil.sucursal.menus');
-    Route::get('/menu/{idMenu}/productos', [MovilMenuController::class, 'listarProductosPorMenu'])->name('movil.menu.productos');
-
-    // 📌 Rutas de clientes
-    Route::post('/clientes', [MovilClienteController::class, 'registrar'])->name('movil.clientes.registrar');
-    Route::get('/clientes/{id}', [MovilClienteController::class, 'obtenerCliente'])->name('movil.clientes.obtener');
-    Route::put('/clientes/{id}', [MovilClienteController::class, 'actualizar'])->name('movil.clientes.actualizar');
-    Route::get('/clientes', [MovilClienteController::class, 'listarClientes'])->name('movil.clientes.listar');
-
-    // Rutas de restaurtantes
-    Route::get('/restaurantes', [MovilRestauranteController::class, 'listarRestaurantes'])->name('movil.restaurantes.listar');
-    Route::get('/restaurante/{id}', [MovilRestauranteController::class, 'obtenerRestaurante'])->name('movil.restaurante.obtener');
+    Route::post('/productos/carrito/detalles', [AndroidController::class, 'obtenerDetallesProductosCarrito']);
+    Route::get('/pedidos/historial/{id_usuario}', [AndroidController::class, 'historialPedidos']);
     
+    Route::post('/obtener-datos-pedido', [AndroidController::class, 'obtenerDatosPedido']);
+    
+    Route::post('/cambiar-contrasena', [AndroidController::class, 'cambiarContrasena']);
+
+    Route::get('/clientes/{id_cliente}/usuarios', [AndroidController::class, 'getUsuariosAsociados']);
+
+    Route::get('/negocio/{id_usuario}/historial-pedidos', [AndroidController::class, 'historialPedidosNegocio']);
+
+    Route::post('/sucursales/{id_sucursal}/toggle', [AndroidController::class, 'toggleEstadoSucursal']);
+
+    Route::get('/estadisticas/cliente/{id_usuario}', [AndroidController::class, 'obtenerEstadisticasCliente']);
+    
+    Route::get('/estadisticas/pedidos/{id_usuario}', [AndroidController::class, 'obtenerCantidadPedidosUsuario']);
+    Route::put('/pedido/cancelar/{id}', [AndroidController::class, 'cancelarPedido']);
+
+
 });
-

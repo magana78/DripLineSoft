@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 
 class AndroidController extends Controller
 {
@@ -52,11 +54,45 @@ class AndroidController extends Controller
         ]);
     }
 
+    // 📌 Registrar usuario
+    public function registrar(Request $request)
+    {
+        try {
+            // ✅ Validación de datos con JSON response
+            $request->validate([
+                'nombre' => 'required|string',
+                'email' => 'required|email|unique:usuarios',
+                'password' => 'required|min:8'
+            ]);
+
+            // ✅ Crear usuario con contraseña encriptada
+            $usuario = Usuario::create([
+                'nombre' => $request->nombre,
+                'email' => $request->email,
+                'contraseña' => Hash::make($request->password),
+                'rol' => 'cliente_final',
+                'fecha_creacion' => now()
+            ]);
+
+            // ✅ Devolver JSON con mensaje de éxito
+            return response()->json([
+                'exito' => true,
+                'mensaje' => 'Usuario registrado exitosamente',
+                'usuario' => $usuario
+            ], 201); // Código HTTP 201 (Creado)
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'exito' => false,
+                'mensaje' => 'Error en el servidor: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function cambiarContrasena(Request $request)
     {
         Log::info("📩 Recibida solicitud de cambio de contraseña", $request->all());
 
-        // Validar datos de entrada
         $validator = Validator::make($request->all(), [
             'id_usuario' => 'required|exists:usuarios,id_usuario',
             'contrasena_actual' => 'required|string',
@@ -75,12 +111,11 @@ class AndroidController extends Controller
             Log::error("❌ Error de validación", $validator->errors()->toArray());
             return response()->json([
                 'success' => false,
-                'message' => 'Error de validación',
+                'message' => 'Error de validación en los campos enviados',
                 'errors' => $validator->errors()
             ], 400);
         }
 
-        // Obtener usuario
         $usuario = Usuario::find($request->id_usuario);
 
         if (!$usuario) {
@@ -93,7 +128,6 @@ class AndroidController extends Controller
 
         Log::info("👤 Usuario encontrado: {$usuario->nombre} (ID: {$usuario->id_usuario})");
 
-        // Verificar contraseña actual (como está en la columna 'contraseña')
         if (!Hash::check($request->contrasena_actual, $usuario->getAuthPassword())) {
             Log::warning("⚠ Contraseña incorrecta para el usuario ID: {$usuario->id_usuario}");
             return response()->json([
@@ -103,7 +137,6 @@ class AndroidController extends Controller
         }
 
         try {
-            // Actualizar contraseña
             $usuario->contraseña = Hash::make($request->nueva_contrasena);
             $usuario->save();
 
@@ -122,6 +155,7 @@ class AndroidController extends Controller
         }
     }
 
+
     public function obtenerClientesActivos(): JsonResponse
     {
         $clientes = Cliente::select(
@@ -133,7 +167,7 @@ class AndroidController extends Controller
             'estado_suscripcion'
         )
             ->where('estado_suscripcion', 'activa')
-            ->whereIn('sector', ['cafetería', 'restaurante'])
+            ->whereIn('sector', ['cafetería', 'restaurante', 'otro'])
             ->get();
 
         // Verificar si se encontraron clientes
@@ -538,6 +572,159 @@ class AndroidController extends Controller
             return response()->json([
                 'exito' => false,
                 'mensaje' => 'Error al obtener la cantidad de pedidos',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // 📌 5️⃣ Historial de pedidos de un usuario con detalles correctos
+    public function historialPedidos($id_usuario)
+    {
+        try {
+            $pedidos = Pedido::where('id_usuario_cliente', $id_usuario)
+                ->with([
+                    'detalles_pedidos.producto',
+                    'sucursale',
+                    'sucursale.cliente',
+                ])
+                ->get();
+
+            if ($pedidos->isEmpty()) {
+                return response()->json([
+                    'exito' => false,
+                    'mensaje' => 'No hay pedidos en el historial'
+                ], 404);
+            }
+
+            $pedidosFormateados = $pedidos->map(function ($pedido) {
+                return [
+                    'id_pedido' => $pedido->id_pedido,
+                    'nombre_comercial' => optional($pedido->sucursale->cliente)->nombre_comercial ?? 'No disponible',
+                    'nombre_sucursal' => optional($pedido->sucursale)->nombre_sucursal ?? 'No disponible',
+                    'fecha_pedido' => $pedido->fecha_pedido->format('Y-m-d H:i:s'),
+                    'fecha_entregado' => $pedido->fecha_entregado
+                        ? $pedido->fecha_entregado->format('Y-m-d H:i:s')
+                        : 'No entregado',
+                    'metodo_pago' => $pedido->metodo_pago,
+                    'estado' => $pedido->estado,
+                    'total' => $pedido->total,
+                    'descuento' => $pedido->descuento ?? 0,
+                    'nota' => $pedido->nota,
+                    'tiempo_entrega_estimado' => $pedido->tiempo_entrega_estimado,
+                    'detalles' => $pedido->detalles_pedidos->map(function ($detalle) {
+                        return [
+                            'id_detalle' => $detalle->id_detalle,
+                            'id_producto' => $detalle->id_producto,
+                            'nombre_producto' => optional($detalle->producto)->nombre_producto ?? 'No disponible',
+                            'cantidad' => $detalle->cantidad,
+                            'subtotal' => $detalle->subtotal,
+                        ];
+                    })
+                ];
+            });
+
+            return response()->json([
+                'exito' => true,
+                'pedidos' => $pedidosFormateados
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'exito' => false,
+                'mensaje' => 'Error al obtener el historial de pedidos',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function historialPedidosNegocio($id_usuario)
+    {
+        try {
+            // Buscar el cliente asociado al usuario
+            $cliente = Cliente::where('id_usuario', $id_usuario)
+                ->with('sucursales.pedidos.detalles_pedidos.producto')
+                ->first();
+
+            // Si el cliente no existe, retornar error
+            if (!$cliente) {
+                return response()->json([
+                    'exito' => false,
+                    'mensaje' => 'No se encontró un negocio asociado a este usuario'
+                ], 404);
+            }
+
+            // Obtener los pedidos de todas las sucursales del negocio
+            $pedidos = collect();
+            foreach ($cliente->sucursales as $sucursal) {
+                foreach ($sucursal->pedidos as $pedido) {
+                    $pedidos->push([
+                        'id_pedido' => $pedido->id_pedido,
+                        'nombre_comercial' => $cliente->nombre_comercial,
+                        'nombre_sucursal' => $sucursal->nombre_sucursal,
+                        'fecha_pedido' => $pedido->fecha_pedido->format('Y-m-d H:i:s'),
+                        'fecha_entregado' => $pedido->fecha_entregado
+                            ? $pedido->fecha_entregado->format('Y-m-d H:i:s')
+                            : 'No entregado',
+                        'metodo_pago' => $pedido->metodo_pago,
+                        'estado' => $pedido->estado,
+                        'total' => $pedido->total,
+                        'descuento' => $pedido->descuento ?? 0,
+                        'nota' => $pedido->nota,
+                        'tiempo_entrega_estimado' => $pedido->tiempo_entrega_estimado,
+                        'detalles' => $pedido->detalles_pedidos->map(function ($detalle) {
+                            return [
+                                'id_detalle' => $detalle->id_detalle,
+                                'id_producto' => $detalle->id_producto,
+                                'nombre_producto' => optional($detalle->producto)->nombre_producto ?? 'No disponible',
+                                'cantidad' => $detalle->cantidad,
+                                'subtotal' => $detalle->subtotal,
+                            ];
+                        })
+                    ]);
+                }
+            }
+
+            if ($pedidos->isEmpty()) {
+                return response()->json([
+                    'exito' => false,
+                    'mensaje' => 'No hay pedidos en el historial'
+                ], 404);
+            }
+
+            return response()->json([
+                'exito' => true,
+                'pedidos' => $pedidos
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'exito' => false,
+                'mensaje' => 'Error al obtener el historial de pedidos',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // 📌 4️⃣ Cancelar un pedido
+    public function cancelarPedido($id)
+    {
+        try {
+            $pedido = Pedido::findOrFail($id);
+
+            if ($pedido->estado != 'pendiente') {
+                return response()->json(['exito' => false, 'mensaje' => 'No se puede cancelar este pedido'], 400);
+            }
+
+            $pedido->update(['estado' => 'cancelado']);
+
+            return response()->json([
+                'exito' => true,
+                'mensaje' => 'Pedido cancelado correctamente'
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['exito' => false, 'mensaje' => 'Pedido no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'exito' => false,
+                'mensaje' => 'Error al cancelar el pedido',
                 'error' => $e->getMessage()
             ], 500);
         }
