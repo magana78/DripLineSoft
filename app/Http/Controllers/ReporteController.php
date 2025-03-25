@@ -14,7 +14,7 @@ class ReporteController extends Controller
     {
         $mesSeleccionado = $request->get('mes', Carbon::now()->month);
 
-        $ventasPorMes = Pedido::where('estado', 'listo')
+        $ventasPorMes = Pedido::where('estado', 'entregado')
             ->whereMonth('fecha_pedido', $mesSeleccionado)
             ->whereYear('fecha_pedido', Carbon::now()->year)
             ->get();
@@ -29,7 +29,7 @@ class ReporteController extends Controller
     {
         $mesSeleccionado = $request->get('mes', Carbon::now()->month);
 
-        $ventasPorMes = Pedido::where('estado', 'listo')
+        $ventasPorMes = Pedido::where('estado', 'entregado')
             ->whereMonth('fecha_pedido', $mesSeleccionado)
             ->whereYear('fecha_pedido', Carbon::now()->year)
             ->get();

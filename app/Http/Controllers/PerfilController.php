@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Cliente;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PerfilController extends Controller
 {
@@ -39,47 +40,66 @@ class PerfilController extends Controller
     }
     
 
+
     public function update(Request $request)
-    {
-        // Obtener usuario autenticado
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Debes iniciar sesión.');
-        }
-
-        // Buscar el usuario en la tabla `usuarios`
-        $usuario = Usuario::where('id_usuario', Auth::id())->first();
-
-        if (!$usuario) {
-            return back()->with('error', 'Usuario no encontrado.');
-        }
-
-        // Buscar el cliente relacionado
-        $cliente = Cliente::where('id_usuario', $usuario->id_usuario)->first();
-
-        // Validar los datos
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'nombre_comercial' => 'required|string|max:255',
-            'direccion' => 'nullable|string|max:255',
-            'telefono' => 'nullable|string|max:15',
-        ]);
-
-        // Actualizar datos del usuario
-        $usuario->update([
-            'nombre' => $request->nombre
-        ]);
-
-        // Actualizar datos del cliente
-        if ($cliente) {
-            $cliente->update([
-                'nombre_comercial' => $request->nombre_comercial,
-                'direccion' => $request->direccion,
-                'telefono' => $request->telefono,
-            ]);
-        }
-
-        return back()->with('success', 'Perfil actualizado correctamente.');
+{
+    if (!Auth::check()) {
+        return redirect()->route('login')->with('error', 'Debes iniciar sesión.');
     }
+
+    $usuario = Usuario::where('id_usuario', Auth::id())->first();
+
+    if (!$usuario) {
+        return back()->with('error', 'Usuario no encontrado.');
+    }
+
+    $cliente = Cliente::where('id_usuario', $usuario->id_usuario)->first();
+
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'nombre_comercial' => 'required|string|max:255',
+        'direccion' => 'nullable|string|max:255',
+        'telefono' => 'nullable|string|max:15',
+        'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048' // ✅ Validación del logo
+    ]);
+
+    // Actualizar datos del usuario
+    $usuario->update([
+        'nombre' => $request->nombre
+    ]);
+
+    // ✅ Verificar si hay un logo nuevo para subir
+    if ($request->hasFile('logo')) {
+        // Eliminar logo anterior si existe
+        if ($cliente->logo && Storage::exists('public/' . $cliente->logo)) {
+            Storage::delete('public/' . $cliente->logo);
+        }
+
+        // Subir nuevo logo
+        $file = $request->file('logo');
+        $fileName = time() . '_' . $file->getClientOriginalName();
+        $filePath = $file->storeAs('logos', $fileName, 'public');
+
+        // Guardar el path en la base de datos
+        $cliente->update([
+            'logo' => $filePath
+        ]);
+    }
+
+    // Actualizar otros datos del cliente
+    $cliente->update([
+        'nombre_comercial' => $request->nombre_comercial,
+        'direccion' => $request->direccion,
+        'telefono' => $request->telefono,
+    ]);
+
+    return back()->with('success', 'Perfil actualizado correctamente.');
+}
+
+
+
+
+    
 
     public function renovar(Request $request)
     {

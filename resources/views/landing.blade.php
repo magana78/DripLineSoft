@@ -14,6 +14,24 @@
         .text-secondary { color: #4f6457 !important; }
         .text-accent { color: #e3a68d !important; }
 
+        .btn-square {
+            border-radius: 0;
+            padding: 10px 25px;
+            margin-left: 10px;
+        }
+
+        .btn-login {
+            background-color: #4f6457;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-register {
+            background-color: #e3a68d;
+            color: #fff;
+            border: none;
+        }
+
         .fade-in {
             opacity: 0;
             transform: translateY(20px);
@@ -41,6 +59,16 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link btn btn-login btn-square" href="/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link btn btn-register btn-square" href="/register">Registro</a>
+                </li>
+            </ul>
+        </div>
     </nav>
 
     <!-- Hero Section -->
@@ -96,17 +124,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Call to Action -->
-    <section class="text-center py-5 fade-in">
-        <div class="container">
-            <h3>Únete a nosotros y lleva tu negocio al siguiente nivel</h3>
-            <div class="mt-4">
-                <a href="/login" class="btn btn-primary btn-lg mx-2">Login</a>
-                <a href="/register" class="btn btn-success btn-lg mx-2">Registro</a>
             </div>
         </div>
     </section>

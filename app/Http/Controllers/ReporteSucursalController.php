@@ -16,7 +16,7 @@ class ReporteSucursalController extends Controller
         $sucursales = Sucursale::all();
 
         // Filtrar por sucursal y mes
-        $query = Pedido::where('estado', 'listo');
+        $query = Pedido::where('estado', 'entregado');
 
         if ($request->filled('sucursal_id')) {
             $query->where('id_sucursal', $request->sucursal_id);
@@ -36,7 +36,7 @@ class ReporteSucursalController extends Controller
     // Generar el PDF del reporte de ventas por sucursal
     public function exportarPDF(Request $request)
     {
-        $query = Pedido::where('estado', 'listo');
+        $query = Pedido::where('estado', 'entregado');
 
         if ($request->filled('sucursal_id')) {
             $query->where('id_sucursal', $request->sucursal_id);

@@ -74,4 +74,10 @@ class Pedido extends Model
     {
         return $this->hasMany(DetallesPedido::class, 'id_pedido');
     }
+    // En app/Models/Pedido.php
+public function cliente()
+{
+    return $this->belongsTo(\App\Models\Cliente::class, 'id_usuario_cliente', 'id_cliente');
+}
+
 }

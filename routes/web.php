@@ -72,6 +72,9 @@ Route::middleware(['auth',  'role:admin_cliente', CheckSubscription::class])->gr
     // Rutas de pedidos
     Route::get('/dashboard/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
     Route::get('/dashboard/pedidos/{id}', [PedidoController::class, 'show'])->name('pedidos.show');
+    Route::put('/pedidos/{id}/entregar', [PedidoController::class, 'entregar'])->name('pedidos.entregar');
+    Route::put('/pedidos/{id}/listo', [PedidoController::class, 'marcarComoListo'])->name('pedidos.listo');
+
 
     // ruta pedidos actualizar pedido, cancelar pedido, actualizar tiempo
     Route::put('/pedidos/{id}/update', [PedidoController::class, 'update'])->name('pedidos.update');

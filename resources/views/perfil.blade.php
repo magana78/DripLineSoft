@@ -30,7 +30,7 @@
                         <div id="paypal-button-container"></div>
                     </div>
                 @else
-                    <form action="{{ route('perfil.update') }}" method="POST" id="perfil-form">
+                    <form action="{{ route('perfil.update') }}" method="POST" id="perfil-form" enctype="multipart/form-data">
                         @csrf
                         <div class="form-group">
                             <label>Nombre:</label>
@@ -48,6 +48,26 @@
                             <label>Teléfono:</label>
                             <input type="text" name="telefono" class="form-control" value="{{ $cliente->telefono ?? '' }}">
                         </div>
+
+                        <div class="form-group">
+                            <label for="logo">Logo del Negocio:</label>
+                            <input type="file" id="logo" name="logo" class="form-control" accept="image/*">
+                    
+                            <div class="text-center my-3">
+                                @if($cliente->logo)
+                                    <img src="{{ asset('storage/' . $cliente->logo) }}" 
+                                         alt="Logo del negocio" 
+                                         class="img-thumbnail rounded-circle shadow-sm"
+                                         width="150">
+                                @else
+                                    <img src="https://via.placeholder.com/150"
+                                         alt="Logo por defecto"
+                                         class="img-thumbnail rounded-circle shadow-sm"
+                                         width="150">
+                                @endif
+                            </div>
+                        </div>
+                        
                         <button type="submit" class="btn btn-success">Actualizar Perfil</button>
                     </form>
                 @endif
@@ -63,6 +83,32 @@
 @section('js')
 <!-- PayPal SDK -->
 <script src="https://www.paypal.com/sdk/js?client-id={{ config('services.paypal.client_id') }}&currency=MXN"></script>
+
+
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        @if(session('success_logo'))
+            Swal.fire({
+                icon: 'success',
+                title: '¡Logo actualizado!',
+                text: '{{ session('success_logo') }}',
+                confirmButtonText: 'Aceptar'
+            });
+        @endif
+
+        @if(session('error_logo'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error_logo') }}',
+                confirmButtonText: 'Aceptar'
+            });
+        @endif
+    });
+</script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
